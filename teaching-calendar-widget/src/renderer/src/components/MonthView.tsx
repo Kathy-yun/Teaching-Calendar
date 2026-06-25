@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isToday, getDay, addDays } from 'date-fns'
 import clsx from 'clsx'
-import type { TeachingCalendar, CalendarDay } from '@shared/types'
+import type { TeachingCalendar, CalendarDay, ClassEntry, TimeSlot } from '@shared/types'
+import { getWeekNumberForDate, getDayOfWeek } from '../parsers/scheduleParser'
 import styles from './MonthView.module.css'
 
 interface MonthViewProps {
@@ -13,10 +14,16 @@ interface MonthViewProps {
   onDateDoubleClick: (date: string) => void
   onBackToToday: () => void
   onChangeCalendar: () => void
+  classEntries?: ClassEntry[]
+  timeSlots?: TimeSlot[]
 }
 
-export function MonthView({ calendar, currentDate, selectedDate, onDateChange, onDateSelect, onDateDoubleClick, onBackToToday, onChangeCalendar }: MonthViewProps) {
-  const days = useMemo(() => buildMonthDays(currentDate, calendar), [currentDate, calendar])
+export function MonthView({
+  calendar, currentDate, selectedDate, onDateChange,
+  onDateSelect, onDateDoubleClick, onBackToToday, onChangeCalendar,
+  classEntries = [], timeSlots = []
+}: MonthViewProps) {
+  const days = useMemo(() => buildMonthDays(currentDate, calendar, classEntries, timeSlots), [currentDate, calendar, classEntries, timeSlots])
 
   const weekdays = ['一', '二', '三', '四', '五', '六', '日']
 
@@ -104,21 +111,27 @@ function DayCell({ day, isSelected, onClick, onDoubleClick }: { day: CalendarDay
     !day.isCurrentMonth && styles.otherMonth,
     day.isToday && styles.today,
     day.teachingWeek && styles.teachingWeek,
-    isSelected && styles.selected
+    isSelected && styles.selected,
+    day.hasClass && styles.hasClass
   )
 
   return (
     <div className={cls} onClick={onClick} onDoubleClick={onDoubleClick}>
       {day.isToday && <span className={styles.todayDot} />}
+      {day.hasClass && !day.isToday && <span className={styles.classDot} />}
       <span className={clsx(styles.dayNum, day.isToday && styles.todayNum)}>
         {day.date ? format(new Date(day.date + 'T00:00:00'), 'd') : ''}
       </span>
       {day.todos.length > 0 && <span className={styles.todoDot}>•</span>}
+      {day.hasClass && <span className={styles.classBadge}>课</span>}
     </div>
   )
 }
 
-function buildMonthDays(date: Date, calendar: TeachingCalendar): CalendarDay[] {
+function buildMonthDays(
+  date: Date, calendar: TeachingCalendar,
+  classEntries: ClassEntry[], timeSlots: TimeSlot[]
+): CalendarDay[] {
   const monthStart = startOfMonth(date)
   const monthEnd = endOfMonth(date)
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd })
@@ -129,6 +142,16 @@ function buildMonthDays(date: Date, calendar: TeachingCalendar): CalendarDay[] {
   const mondayOffset = startWeekday === 0 ? -6 : 1 - startWeekday
   const paddedStart = addDays(firstDay, mondayOffset)
 
+  // 预计算课表：周次 -> Set<dayOfWeek>
+  const scheduleByWeek = new Map<number, Set<number>>()
+  for (const entry of classEntries) {
+    const key = entry.week || 0
+    if (!scheduleByWeek.has(key)) {
+      scheduleByWeek.set(key, new Set())
+    }
+    scheduleByWeek.get(key)!.add(entry.dayOfWeek)
+  }
+
   const allDays: CalendarDay[] = []
   for (let i = 0; i < 42; i++) {
     const d = addDays(paddedStart, i)
@@ -137,9 +160,21 @@ function buildMonthDays(date: Date, calendar: TeachingCalendar): CalendarDay[] {
 
     // Check if this date falls within a teaching week
     let teachingWeek: number | undefined
+    let hasClass = false
+
     for (const tw of calendar.teachingWeeks) {
       if (iso >= tw.startDate && iso <= tw.endDate) {
         teachingWeek = tw.weekNumber
+
+        // 检查当天是否有课
+        const dayOfWeek = getDayOfWeek(iso)
+        const weekSchedule = scheduleByWeek.get(0) // 每周重复的
+        const specificSchedule = scheduleByWeek.get(teachingWeek) // 特定周的
+
+        if ((weekSchedule && weekSchedule.has(dayOfWeek)) ||
+            (specificSchedule && specificSchedule.has(dayOfWeek))) {
+          hasClass = true
+        }
         break
       }
     }
@@ -149,7 +184,8 @@ function buildMonthDays(date: Date, calendar: TeachingCalendar): CalendarDay[] {
       isCurrentMonth: inMonth,
       isToday: isToday(d),
       teachingWeek,
-      todos: []
+      todos: [],
+      hasClass
     })
   }
 

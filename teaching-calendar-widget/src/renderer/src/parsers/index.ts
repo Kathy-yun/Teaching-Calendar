@@ -1,6 +1,10 @@
 import type { ParseResult } from '@shared/types'
 import { parseXlsFile } from './xlsParser'
+import { parseTimeSlotsFile, parseClassScheduleFile } from './scheduleParser'
 
+/**
+ * 解析教学日历文件 (xls/xlsx)
+ */
 export async function parseFile(file: File): Promise<ParseResult> {
   const ext = file.name.split('.').pop()?.toLowerCase()
   const buffer = await file.arrayBuffer()
@@ -16,3 +20,5 @@ export async function parseFile(file: File): Promise<ParseResult> {
       }
   }
 }
+
+export { parseTimeSlotsFile, parseClassScheduleFile }
