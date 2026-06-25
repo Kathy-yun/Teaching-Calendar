@@ -144,6 +144,16 @@ function ClassItem({
   timeSlot?: TimeSlot
   onToggle: () => void
 }) {
+  // 从 todo.content 中提取时间（如 "08:00-09:30"）和剩余内容
+  const timeMatch = todo.content.match(/^(\d{1,2}:\d{2}-\d{1,2}:\d{2})\s(.+)$/)
+  const timeStr = timeMatch ? timeMatch[1] : (timeSlot ? `${timeSlot.startTime}-${timeSlot.endTime}` : '')
+  const restContent = timeMatch ? timeMatch[2] : todo.content.replace(/^第[\d+]+节\s*/, '')
+
+  // 从剩余内容中分离教室
+  const parts = restContent.split(/\s+/)
+  const courseName = parts[0] || entry.course
+  const classroom = parts.length > 1 ? parts.slice(1).join(' ') : entry.classroom
+
   return (
     <div className={clsx(styles.item, styles.classItem, todo.completed && styles.done)}>
       <button className={styles.check} onClick={onToggle}>
@@ -151,13 +161,13 @@ function ClassItem({
       </button>
       <div className={styles.classContent}>
         <div className={styles.classMain}>
-          {timeSlot && (
-            <span className={styles.classTime}>{timeSlot.startTime}-{timeSlot.endTime}</span>
+          {timeStr && (
+            <span className={styles.classTime}>{timeStr}</span>
           )}
-          <span className={styles.className}>{entry.course}</span>
+          <span className={styles.className}>{courseName}</span>
         </div>
         <div className={styles.classDetail}>
-          {entry.classroom && <span className={styles.classRoom}>{entry.classroom}</span>}
+          {classroom && <span className={styles.classRoom}>{classroom}</span>}
           {entry.class && <span className={styles.classGroup}>{entry.class}</span>}
         </div>
       </div>
