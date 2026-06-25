@@ -126,7 +126,13 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
         const dayOfWeek = getDayOfWeek(dateStr)
 
         // 筛选当天、当前周的课表条目
-        const todayEntries = classEntries.filter(e => e.dayOfWeek === dayOfWeek && (e.week === 0 || e.week === tw.weekNumber))
+        // week=0 表示每周都有的课（仅在当前教学周内显示）
+        // week>0 表示只在特定教学周显示的课
+        const todayEntries = classEntries.filter(e => {
+          if (e.dayOfWeek !== dayOfWeek) return false
+          if (e.week === 0) return true // 每周重复的课，在教学周范围内显示
+          return e.week === tw.weekNumber // 精确匹配周次
+        })
 
         // 按 (course, classroom, class) 分组，合并连续节次
         const groups = new Map<string, ClassEntry[]>()

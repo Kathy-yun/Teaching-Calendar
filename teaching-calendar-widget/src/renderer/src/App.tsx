@@ -60,9 +60,8 @@ function App() {
           removeAutoTodos()
         }
 
-        // 设置课表条目
-        const entries = parseResult.data.map(e => ({ ...e, week: 0 })) // 周次在生成时根据日期计算
-        setClassEntries(entries)
+        // 设置课表条目（保留解析出的周次）
+        setClassEntries(parseResult.data)
 
         // 生成课表待办
         if (calendar) {
