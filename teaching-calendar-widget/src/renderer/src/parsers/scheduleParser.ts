@@ -135,7 +135,7 @@ export function parseClassScheduleFile(buffer: ArrayBuffer): ClassScheduleResult
       if (!slotMatch) continue
 
       // "第12节" 表示第1、2节, "第34节" 表示第3、4节, 以此类推
-      const slotDigits = slotMatch[1].split('').map(Number).filter(n => n >= 1 && n <= 12)
+      const slotDigits = slotMatch[1].split('').map(Number).filter(n => n >= 1 && n <= 14)
 
       // 跳过午休标记
       if (colA.includes('午')) continue
@@ -343,22 +343,23 @@ export function generateClassTodosForDate(
 }
 
 /**
- * 默认上课时间映射表
- * 典型的中国大学本科课程时间
+ * 默认上课时间映射表（顺义校区 2025-2026-2）
  */
 export function getDefaultTimeSlots(): TimeSlot[] {
   return [
-    { slot: 1, startTime: '08:00', endTime: '08:45' },
-    { slot: 2, startTime: '08:55', endTime: '09:40' },
-    { slot: 3, startTime: '09:55', endTime: '10:40' },
-    { slot: 4, startTime: '10:50', endTime: '11:35' },
-    { slot: 5, startTime: '11:40', endTime: '12:15' },
-    { slot: 6, startTime: '14:00', endTime: '14:45' },
-    { slot: 7, startTime: '14:55', endTime: '15:40' },
-    { slot: 8, startTime: '15:55', endTime: '16:40' },
-    { slot: 9, startTime: '16:50', endTime: '17:35' },
-    { slot: 10, startTime: '19:00', endTime: '19:45' },
-    { slot: 11, startTime: '19:55', endTime: '20:40' },
-    { slot: 12, startTime: '20:50', endTime: '21:35' },
+    { slot: 1,  startTime: '08:00', endTime: '08:45' },
+    { slot: 2,  startTime: '08:45', endTime: '09:30' },
+    { slot: 3,  startTime: '09:45', endTime: '10:30' },
+    { slot: 4,  startTime: '10:30', endTime: '11:15' },
+    { slot: 5,  startTime: '11:25', endTime: '12:10' },
+    { slot: 6,  startTime: '12:10', endTime: '12:55' },
+    { slot: 7,  startTime: '13:05', endTime: '13:50' },
+    { slot: 8,  startTime: '13:50', endTime: '14:35' },
+    { slot: 9,  startTime: '14:50', endTime: '15:35' },
+    { slot: 10, startTime: '15:35', endTime: '16:20' },
+    { slot: 11, startTime: '16:30', endTime: '17:15' },
+    { slot: 12, startTime: '17:15', endTime: '18:00' },
+    { slot: 13, startTime: '18:10', endTime: '18:55' },
+    { slot: 14, startTime: '18:55', endTime: '19:40' },
   ]
 }
