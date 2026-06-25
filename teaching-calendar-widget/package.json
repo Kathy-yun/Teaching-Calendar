@@ -47,12 +47,14 @@
     ],
     "win": {
       "target": [
-        "nsis"
+        "portable"
       ]
     },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    }
+    "portable": {
+      "artifactName": "教学日历挂件-portable.exe"
+    },
+    "electronVersion": "34.5.8",
+    "electronDist": "D:\\Claude Code实战\\data\\teaching-calendar-widget\\node_modules\\electron\\dist",
+    "forceCodeSigning": false
   }
 }
