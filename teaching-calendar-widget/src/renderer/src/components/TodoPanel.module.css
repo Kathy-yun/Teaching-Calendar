@@ -68,6 +68,22 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.timeBtn {
+  padding: 3px 10px;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 4px;
+  background: rgba(96, 165, 250, 0.08);
+  color: rgba(96, 165, 250, 0.7);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.timeBtn:hover {
+  background: rgba(96, 165, 250, 0.15);
+  color: #93c5fd;
+}
+
 .empty {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.25);

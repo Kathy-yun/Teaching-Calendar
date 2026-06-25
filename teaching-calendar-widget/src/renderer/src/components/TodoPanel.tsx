@@ -16,11 +16,12 @@ interface TodoPanelProps {
   onDelete: (id: string) => void
   onUploadSchedule: () => void
   onRemoveSchedule: () => void
+  onUploadTimeSlots: () => void
 }
 
 export function TodoPanel({
   todos, selectedDate, classEntries, timeSlots,
-  onAdd, onToggle, onDelete, onUploadSchedule, onRemoveSchedule
+  onAdd, onToggle, onDelete, onUploadSchedule, onRemoveSchedule, onUploadTimeSlots
 }: TodoPanelProps) {
   const [showModal, setShowModal] = useState(false)
 
@@ -95,6 +96,9 @@ export function TodoPanel({
               上传课表
             </button>
           )}
+          <button className={styles.timeBtn} onClick={onUploadTimeSlots} title="上传上课时间">
+            时间表
+          </button>
           <button className={styles.addBtn} onClick={() => setShowModal(true)}>
             + 添加
           </button>
