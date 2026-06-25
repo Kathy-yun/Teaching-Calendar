@@ -1,19 +1,21 @@
 import * as XLSX from 'xlsx'
-import type { TimeSlot, TimeSlotsResult, ClassEntry, ClassScheduleResult, RawTimeSlotRow, RawClassRow } from '@shared/types'
+import type { TimeSlot, TimeSlotsResult, ClassEntry, ClassScheduleResult } from '@shared/types'
 
 const DAY_MAP: Record<string, number> = {
-  '周一': 1, '星期一': 1, '1': 1,
-  '周二': 2, '星期二': 2, '2': 2,
-  '周三': 3, '星期三': 3, '3': 3,
-  '周四': 4, '星期四': 4, '4': 4,
-  '周五': 5, '星期五': 5, '5': 5,
-  '周六': 6, '星期六': 6, '6': 6,
-  '周日': 7, '星期日': 7, '7': 7,
+  '星期一': 1, '周一': 1, '1': 1, '一': 1,
+  '星期二': 2, '周二': 2, '2': 2, '二': 2,
+  '星期三': 3, '周三': 3, '3': 3, '三': 3,
+  '星期四': 4, '周四': 4, '4': 4, '四': 4,
+  '星期五': 5, '周五': 5, '5': 5, '五': 5,
+  '星期六': 6, '周六': 6, '6': 6, '六': 6,
+  '星期日': 7, '周日': 7, '7': 7, '日': 7,
 }
 
 /**
  * 解析上课时间映射表
- * 列结构: A=节次 | B=开始时间(HH:mm) | C=结束时间(HH:mm) | D=可选标签
+ * 支持两种格式：
+ * 1. 列结构: A=节次 | B=开始时间(HH:mm) | C=结束时间(HH:mm) | D=可选标签
+ * 2. 如果解析失败则返回空数组，使用默认时间映射
  */
 export function parseTimeSlotsFile(buffer: ArrayBuffer): TimeSlotsResult {
   try {
@@ -21,13 +23,13 @@ export function parseTimeSlotsFile(buffer: ArrayBuffer): TimeSlotsResult {
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
 
     if (!sheet) {
-      return { success: false, errors: ['文件为空'] }
+      return { success: true, data: getDefaultTimeSlots(), errors: ['文件为空，使用默认时间映射'] }
     }
 
     const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' }) as any[][]
 
     if (!rawData || rawData.length < 2) {
-      return { success: false, errors: ['文件内容为空或格式不正确'] }
+      return { success: true, data: getDefaultTimeSlots(), errors: ['文件内容为空，使用默认时间映射'] }
     }
 
     const timeSlots: TimeSlot[] = []
@@ -53,22 +55,26 @@ export function parseTimeSlotsFile(buffer: ArrayBuffer): TimeSlotsResult {
     }
 
     if (timeSlots.length === 0) {
-      return { success: false, errors: ['未能解析出任何时间节次'] }
+      return { success: true, data: getDefaultTimeSlots(), errors: ['未解析到时间节次，使用默认时间映射'] }
     }
 
     return { success: true, data: timeSlots, errors: [] }
   } catch (err) {
     console.error('[TimeSlotParser] Error:', err)
     return {
-      success: false,
-      errors: [`解析失败: ${err instanceof Error ? err.message : String(err)}`]
+      success: true,
+      data: getDefaultTimeSlots(),
+      errors: [`解析失败，使用默认时间映射: ${err instanceof Error ? err.message : String(err)}`]
     }
   }
 }
 
 /**
- * 解析上课课表
- * 列结构: A=星期 | B=节次 | C=课程 | D=班级 | E=教室
+ * 解析教师个人课表
+ * 格式：
+ *   Row 2 (index 2): 表头 — A列空, B=星期一, C=星期二, ..., H=星期日
+ *   Row A列: 节次标签 (如 "第12节", "第34节", "午12节", "晚12节"...)
+ *   Cells: 多行文本 = 课程名\n周次\n教室\n班级
  */
 export function parseClassScheduleFile(buffer: ArrayBuffer): ClassScheduleResult {
   try {
@@ -81,41 +87,142 @@ export function parseClassScheduleFile(buffer: ArrayBuffer): ClassScheduleResult
 
     const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' }) as any[][]
 
-    if (!rawData || rawData.length < 2) {
+    if (!rawData || rawData.length < 3) {
       return { success: false, errors: ['文件内容为空或格式不正确'] }
     }
 
-    const entries: ClassEntry[] = []
+    // 1. 找到表头行（包含"星期"的行），确定星期列映射
+    let headerRowIdx = -1
+    let dayColMap: Record<number, number> = {} // colIndex -> dayOfWeek
 
-    for (let i = 1; i < rawData.length; i++) {
-      const row = rawData[i]
-      if (!row || row.length < 3) continue
-
-      const dayRaw = String(row[0] || '').trim()
-      const slotVal = parseInt(String(row[1] || '').trim())
-      const course = String(row[2] || '').trim()
-      const cls = String(row[3] || '').trim()
-      const classroom = String(row[4] || '').trim()
-
-      // 跳过空行
-      if (!dayRaw && !course) continue
-
-      const dayOfWeek = DAY_MAP[dayRaw] || DAY_MAP[String(row[0] || '').trim()]
-      if (!dayOfWeek || isNaN(slotVal) || slotVal < 1 || !course) continue
-
-      entries.push({
-        id: crypto.randomUUID(),
-        week: 0, // 周次在生成待办时根据日期计算
-        dayOfWeek,
-        slot: slotVal,
-        course,
-        class: cls,
-        classroom
-      })
+    for (let r = 0; r < Math.min(rawData.length, 5); r++) {
+      const row = rawData[r]
+      for (let c = 0; c < (row?.length || 0); c++) {
+        const cell = String(row[c] || '').trim()
+        if (cell.includes('星期') || cell.includes('周')) {
+          headerRowIdx = r
+          for (let cc = 0; cc < (row?.length || 0); cc++) {
+            const headerCell = String(row[cc] || '').trim()
+            const day = DAY_MAP[headerCell]
+            if (day) {
+              dayColMap[cc] = day
+            }
+          }
+          break
+        }
+      }
+      if (headerRowIdx >= 0) break
     }
 
+    if (headerRowIdx < 0 || Object.keys(dayColMap).length === 0) {
+      return { success: false, errors: ['未找到星期表头行，请确认文件格式'] }
+    }
+
+    console.log('[ScheduleParser] Header row:', headerRowIdx, 'Day cols:', dayColMap)
+
+    // 2. 解析节次标签行，建立 rowIndex -> [slot1, slot2, ...] 映射
+    const slotLabels: Record<number, number[]> = {}
+
+    for (let r = headerRowIdx + 1; r < rawData.length; r++) {
+      const row = rawData[r]
+      if (!row || row.length === 0) continue
+
+      const colA = String(row[0] || '').trim()
+      if (!colA) continue
+
+      // 匹配节次标签: 第12节(第1-2节), 第34节(第3-4节), 晚12节, 午12节等
+      const slotMatch = colA.match(/(?:第|晚|午)?(\d+)\s*节/)
+      if (!slotMatch) continue
+
+      // "第12节" 表示第1、2节, "第34节" 表示第3、4节, 以此类推
+      const slotDigits = slotMatch[1].split('').map(Number).filter(n => n >= 1 && n <= 12)
+
+      // 跳过午休标记
+      if (colA.includes('午')) continue
+
+      slotLabels[r] = slotDigits
+    }
+
+    console.log('[ScheduleParser] Slot labels by row:', JSON.stringify(slotLabels))
+
+    // 3. 重新遍历数据行，提取课程信息
+    const entries: ClassEntry[] = []
+
+    for (let r = headerRowIdx + 1; r < rawData.length; r++) {
+      const row = rawData[r]
+      if (!row || row.length === 0) continue
+
+      const colA = String(row[0] || '').trim()
+      if (!colA) continue
+
+      // 跳过午休行
+      if (colA.includes('午')) continue
+      if (!colA.match(/(?:第|晚)?(\d+)\s*节/)) continue
+
+      for (let c = 1; c < (row?.length || 0); c++) {
+        const cellRaw = String(row[c] || '').trim()
+        if (!cellRaw || cellRaw === ' ') continue
+
+        // 检查此行是否有节次标签
+        const slots = slotLabels[r]
+        if (!slots || slots.length === 0) continue
+
+        // 检查此列是否是星期列
+        const dayOfWeek = dayColMap[c]
+        if (!dayOfWeek) continue
+
+        // 解析单元格多行内容
+        const lines = cellRaw.split('\n').map(l => l.trim()).filter(Boolean)
+        if (lines.length < 1) continue
+
+        const course = lines[0]
+        if (!course) continue
+
+        // 解析周次
+        const weekRanges: number[] = []
+        for (let li = 1; li < lines.length; li++) {
+          const line = lines[li]
+          if (line.includes('周')) {
+            const weeks = parseWeekRanges(line)
+            weekRanges.push(...weeks)
+          }
+        }
+
+        // 解析教室和班级
+        let classroom = ''
+        let cls = ''
+        for (let li = 1; li < lines.length; li++) {
+          const line = lines[li]
+          if (line.includes('周')) continue
+          if (!classroom && !line.match(/^\d/)) {
+            // 教室通常是字母+数字组合如 "综518", "教302"
+            classroom = line
+          } else if (!cls) {
+            cls = line
+          }
+        }
+
+        // 为每个周次和节次创建条目
+        for (const week of weekRanges.length > 0 ? weekRanges : [0]) {
+          for (const slot of slots) {
+            entries.push({
+              id: crypto.randomUUID(),
+              week,
+              dayOfWeek,
+              slot,
+              course,
+              class: cls,
+              classroom
+            })
+          }
+        }
+      }
+    }
+
+    console.log('[ScheduleParser] Parsed', entries.length, 'entries')
+
     if (entries.length === 0) {
-      return { success: false, errors: ['未能解析出任何课程条目'] }
+      return { success: false, errors: ['未能解析出任何课程条目，请确认文件格式'] }
     }
 
     return { success: true, data: entries, errors: [] }
@@ -126,6 +233,34 @@ export function parseClassScheduleFile(buffer: ArrayBuffer): ClassScheduleResult
       errors: [`解析失败: ${err instanceof Error ? err.message : String(err)}`]
     }
   }
+}
+
+/**
+ * 解析周次范围，如 "1-4,6-8,10-12" → [1,2,3,4,6,7,8,10,11,12]
+ */
+function parseWeekRanges(text: string): number[] {
+  const weeks: number[] = []
+  const cleaned = text.replace(/周/g, '').trim()
+
+  const parts = cleaned.split(',')
+  for (const part of parts) {
+    const trimmed = part.trim()
+    if (trimmed.includes('-')) {
+      const [start, end] = trimmed.split('-').map(Number)
+      if (!isNaN(start) && !isNaN(end) && start <= end) {
+        for (let w = start; w <= end; w++) {
+          weeks.push(w)
+        }
+      }
+    } else {
+      const w = parseInt(trimmed)
+      if (!isNaN(w)) {
+        weeks.push(w)
+      }
+    }
+  }
+
+  return weeks
 }
 
 /**
@@ -182,7 +317,7 @@ export function generateClassTodosForDate(
 
   const dayOfWeek = getDayOfWeek(dateStr)
 
-  // 筛选当天、当前周的课表条目
+  // 筛选当天、当前周的课表条目（week=0 表示每周都有）
   const matched = classEntries.filter(e => e.week === 0 || e.week === weekNum)
   const todayEntries = matched.filter(e => e.dayOfWeek === dayOfWeek)
 
@@ -205,4 +340,25 @@ export function generateClassTodosForDate(
         entry
       }
     })
+}
+
+/**
+ * 默认上课时间映射表
+ * 典型的中国大学本科课程时间
+ */
+export function getDefaultTimeSlots(): TimeSlot[] {
+  return [
+    { slot: 1, startTime: '08:00', endTime: '08:45' },
+    { slot: 2, startTime: '08:55', endTime: '09:40' },
+    { slot: 3, startTime: '09:55', endTime: '10:40' },
+    { slot: 4, startTime: '10:50', endTime: '11:35' },
+    { slot: 5, startTime: '11:40', endTime: '12:15' },
+    { slot: 6, startTime: '14:00', endTime: '14:45' },
+    { slot: 7, startTime: '14:55', endTime: '15:40' },
+    { slot: 8, startTime: '15:55', endTime: '16:40' },
+    { slot: 9, startTime: '16:50', endTime: '17:35' },
+    { slot: 10, startTime: '19:00', endTime: '19:45' },
+    { slot: 11, startTime: '19:55', endTime: '20:40' },
+    { slot: 12, startTime: '20:50', endTime: '21:35' },
+  ]
 }

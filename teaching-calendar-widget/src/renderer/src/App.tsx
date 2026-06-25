@@ -5,7 +5,7 @@ import { MonthView } from './components/MonthView'
 import { TodoPanel } from './components/TodoPanel'
 import { UploadPanel } from './components/UploadPanel'
 import { useCalendarStore } from './store/calendarStore'
-import { parseFile, parseTimeSlotsFile, parseClassScheduleFile } from './parsers'
+import { parseFile, parseClassScheduleFile } from './parsers'
 import styles from './App.module.css'
 
 function App() {
@@ -18,7 +18,6 @@ function App() {
   const toggleTodo = useCalendarStore((s) => s.toggleTodo)
   const deleteTodo = useCalendarStore((s) => s.deleteTodo)
   const timeSlots = useCalendarStore((s) => s.timeSlots)
-  const setTimeSlots = useCalendarStore((s) => s.setTimeSlots)
   const classEntries = useCalendarStore((s) => s.classEntries)
   const setClassEntries = useCalendarStore((s) => s.setClassEntries)
   const generateClassTodos = useCalendarStore((s) => s.generateClassTodos)
@@ -41,32 +40,6 @@ function App() {
       setSelectedDate(format(today, 'yyyy-MM-dd'))
     }
   }, [setCalendar])
-
-  // 上传上课时间映射表
-  const handleTimeSlotsUpload = useCallback(async () => {
-    try {
-      const result = await (window as any).widgetAPI?.openFile?.()
-      if (!result) return
-
-      const readResult = await (window as any).widgetAPI?.readFile?.(result)
-      if (!readResult) return
-
-      setLoading(true)
-      const buffer = new Uint8Array(readResult.buffer).buffer
-      const parseResult = parseTimeSlotsFile(buffer)
-
-      if (parseResult.success && parseResult.data) {
-        setTimeSlots(parseResult.data)
-      } else {
-        alert(parseResult.errors.join('\n') || '解析失败')
-      }
-    } catch (err) {
-      console.error('上传时间映射表失败:', err)
-      alert('上传失败')
-    } finally {
-      setLoading(false)
-    }
-  }, [setTimeSlots, setLoading])
 
   // 上传上课课表
   const handleScheduleUpload = useCallback(async () => {

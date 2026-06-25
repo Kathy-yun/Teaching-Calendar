@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { TeachingCalendar, ParseResult, TodoItem, TimeSlot, ClassEntry } from '@shared/types'
-import { generateClassTodosForDate, getWeekNumberForDate, getDayOfWeek } from '../parsers/scheduleParser'
+import { getDayOfWeek, getDefaultTimeSlots } from '../parsers/scheduleParser'
 
 interface CalendarState {
   currentCalendar: TeachingCalendar | null
@@ -106,42 +106,72 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     const { currentCalendar, classEntries, timeSlots, todos } = get()
     if (!currentCalendar || classEntries.length === 0) return
 
+    // 如果没有上传时间映射表，使用默认映射
+    const slotList = timeSlots.length > 0 ? timeSlots : getDefaultTimeSlots()
+    const slotMap = new Map(slotList.map(s => [s.slot, s]))
+
     // 移除旧的自动生成待办
     const manualTodos = todos.filter(t => !t.courseEntryId)
 
     const newTodos: TodoItem[] = []
 
     for (const tw of currentCalendar.teachingWeeks) {
-      // 如果指定了日期范围，跳过范围外的周
       if (startDate && tw.endDate < startDate) continue
       if (endDate && tw.startDate > endDate) continue
 
-      // 遍历该周的每一天
       const cur = new Date(tw.startDate + 'T00:00:00')
       const end = new Date(tw.endDate + 'T00:00:00')
       while (cur <= end) {
         const dateStr = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}-${String(cur.getDate()).padStart(2, '0')}`
         const dayOfWeek = getDayOfWeek(dateStr)
 
-        // 筛选当天的课表条目
-        const todayEntries = classEntries.filter(e => e.dayOfWeek === dayOfWeek)
+        // 筛选当天、当前周的课表条目
+        const todayEntries = classEntries.filter(e => e.dayOfWeek === dayOfWeek && (e.week === 0 || e.week === tw.weekNumber))
 
-        const slotMap = new Map(timeSlots.map(s => [s.slot, s]))
-
+        // 按 (course, classroom, class) 分组，合并连续节次
+        const groups = new Map<string, ClassEntry[]>()
         for (const entry of todayEntries) {
-          const ts = slotMap.get(entry.slot)
-          const content = ts
-            ? `${ts.startTime}-${ts.endTime} ${entry.course} ${entry.classroom}`
-            : `第${entry.slot}节 ${entry.course} ${entry.classroom}`
+          const key = `${entry.course}\x00${entry.classroom}\x00${entry.class}`
+          if (!groups.has(key)) groups.set(key, [])
+          groups.get(key)!.push(entry)
+        }
 
-          newTodos.push({
-            id: `class-${entry.id}-${dateStr}`,
-            date: dateStr,
-            content,
-            completed: false,
-            createdAt: new Date().toISOString(),
-            courseEntryId: entry.id
-          })
+        for (const [, entries] of groups) {
+          // 按节次排序
+          entries.sort((a, b) => a.slot - b.slot)
+
+          // 合并连续节次
+          const merged: { slots: number[], entry: ClassEntry }[] = []
+          for (const entry of entries) {
+            const last = merged[merged.length - 1]
+            if (last && entry.slot === last.slots[last.slots.length - 1] + 1) {
+              last.slots.push(entry.slot)
+            } else {
+              merged.push({ slots: [entry.slot], entry })
+            }
+          }
+
+          for (const { slots, entry } of merged) {
+            const firstSlot = slotMap.get(slots[0])
+            const lastSlot = slotMap.get(slots[slots.length - 1])
+            let timeStr = ''
+            if (firstSlot && lastSlot) {
+              timeStr = `${firstSlot.startTime}-${lastSlot.endTime}`
+            }
+
+            const content = timeStr
+              ? `${timeStr} ${entry.course} ${entry.classroom}`
+              : `第${slots.join('+')}节 ${entry.course} ${entry.classroom}`
+
+            newTodos.push({
+              id: `class-${entry.id}-${dateStr}-${slots.join('+')}`,
+              date: dateStr,
+              content,
+              completed: false,
+              createdAt: new Date().toISOString(),
+              courseEntryId: entry.id
+            })
+          }
         }
 
         cur.setDate(cur.getDate() + 1)
