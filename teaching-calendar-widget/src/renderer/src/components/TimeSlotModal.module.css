@@ -20,6 +20,7 @@
   flex-direction: column;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
   animation: fadeIn 0.2s ease-out;
+  position: relative;
 }
 
 @keyframes fadeIn {
@@ -249,4 +250,14 @@
   opacity: 0.3;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.savedBtn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.savedBtn:hover {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }

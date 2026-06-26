@@ -284,9 +284,9 @@ export function getDayOfWeek(dateStr: string): number {
  */
 export function getDefaultTimeSlots(): TimeSlot[] {
   return [
-    { slot: 1,  startTime: '08:00', endTime: '08:45' },
-    { slot: 2,  startTime: '08:45', endTime: '09:30' },
-    { slot: 3,  startTime: '09:45', endTime: '10:30' },
+    { slot: 1,  startTime: '8:00', endTime: '8:45' },
+    { slot: 2,  startTime: '8:45', endTime: '9:30' },
+    { slot: 3,  startTime: '9:45', endTime: '10:30' },
     { slot: 4,  startTime: '10:30', endTime: '11:15' },
     { slot: 5,  startTime: '11:25', endTime: '12:10' },
     { slot: 6,  startTime: '12:10', endTime: '12:55' },

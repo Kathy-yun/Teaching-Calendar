@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import clsx from 'clsx'
 import type { TimeSlot } from '@shared/types'
 import { getDefaultTimeSlots } from '../parsers/scheduleParser'
@@ -10,18 +10,70 @@ interface TimeSlotModalProps {
   onClose: () => void
 }
 
-const TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/
+const TIME_RE = /^([0-9]|0\d|1\d|2[0-3]):[0-5]\d$/
 
 function validateTime(value: string): boolean {
   return TIME_RE.test(value)
+}
+
+// 时间字符串转分钟数，避免 "9:45" >= "10:30" 这类字符串比较bug
+function toMinutes(time: string): number {
+  const [h, m] = time.split(':').map(Number)
+  return h * 60 + m
 }
 
 export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps) {
   const [slots, setSlots] = useState<TimeSlot[]>(() =>
     timeSlots.length > 0 ? [...timeSlots] : getDefaultTimeSlots()
   )
+  const [saved, setSaved] = useState(false)
 
-  const [errors, setErrors] = useState<Record<number, string>>({})
+  // 全表扫描，检测时间矛盾并返回按字段标记的错误信息
+  const scanConflicts = useMemo((): Record<number, { start?: string; end?: string }> => {
+    const errors: Record<number, { start?: string; end?: string }> = {}
+
+    for (let i = 0; i < slots.length; i++) {
+      const s = slots[i]
+
+      // 格式校验
+      if (s.startTime && !validateTime(s.startTime)) {
+        errors[i] = errors[i] || {}
+        errors[i]!.start = '格式错误'
+      }
+      if (s.endTime && !validateTime(s.endTime)) {
+        errors[i] = errors[i] || {}
+        errors[i]!.end = '格式错误'
+      }
+
+      // 本行内：上课 >= 下课
+      if (s.startTime && s.endTime && toMinutes(s.startTime) >= toMinutes(s.endTime)) {
+        errors[i] = errors[i] || {}
+        errors[i]!.start = '须早于下课时间'
+      }
+    }
+
+    // 相邻行：下课时间 > 下一行上课时间 = 重叠
+    for (let i = 0; i < slots.length - 1; i++) {
+      const currEnd = slots[i].endTime
+      const nextStart = slots[i + 1].startTime
+
+      if (currEnd && nextStart && toMinutes(currEnd) > toMinutes(nextStart)) {
+        const nextSlot = slots[i + 1].slot
+        const currSlot = slots[i].slot
+
+        errors[i] = errors[i] || {}
+        errors[i]!.end = `下课 ${currEnd} 与第${nextSlot}节上课 ${nextStart} 重叠`
+
+        errors[i + 1] = errors[i + 1] || {}
+        errors[i + 1]!.start = `上课 ${nextStart} 与第${currSlot}节下课 ${currEnd} 重叠`
+      }
+    }
+
+    return errors
+  }, [slots])
+
+  const errors = scanConflicts
+  const hasErrors = Object.values(errors).some(e => e.start || e.end)
 
   const updateSlot = (index: number, field: keyof TimeSlot, value: string) => {
     setSlots(prev => {
@@ -29,33 +81,13 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
       next[index] = { ...next[index], [field]: value }
       return next
     })
-    setErrors(prev => {
-      const next = { ...prev }
-      delete next[index]
-      return next
-    })
-  }
-
-  const validateAll = (): boolean => {
-    const newErrors: Record<number, string> = {}
-    for (let i = 0; i < slots.length; i++) {
-      const s = slots[i]
-      if (!validateTime(s.startTime)) {
-        newErrors[i] = newErrors[i] || `上课时间格式错误`
-      }
-      if (!validateTime(s.endTime)) {
-        newErrors[i] = newErrors[i] || `下课时间格式错误`
-      }
-      if (s.startTime && s.endTime && s.startTime >= s.endTime) {
-        newErrors[i] = '上课时间须早于下课时间'
-      }
-    }
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
   }
 
   const handleSave = () => {
-    if (!validateAll()) return
+    if (hasErrors) {
+      alert('请检查标红的时段，确保所有时间无重叠且格式正确')
+      return
+    }
     const cleaned = slots.map(({ slot, startTime, endTime, label }) => ({
       slot,
       startTime,
@@ -63,28 +95,22 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
       ...(label ? { label } : {})
     }))
     onSave(cleaned)
+    setSaved(true)
+    setTimeout(onClose, 600)
   }
 
   const handleAdd = () => {
     const maxSlot = slots.reduce((max, s) => Math.max(max, s.slot), 0)
-    setSlots(prev => [...prev, { slot: maxSlot + 1, startTime: '08:00', endTime: '08:45' }])
+    setSlots(prev => [...prev, { slot: maxSlot + 1, startTime: '8:00', endTime: '8:45' }])
   }
 
   const handleDelete = (index: number) => {
     setSlots(prev => prev.filter((_, i) => i !== index))
-    setErrors(prev => {
-      const next = { ...prev }
-      delete next[index]
-      return next
-    })
   }
 
   const handleReset = () => {
     setSlots(getDefaultTimeSlots())
-    setErrors({})
   }
-
-  const hasErrors = Object.keys(errors).length > 0
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -103,16 +129,16 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
           </div>
           {slots.map((s, i) => (
             <div className={styles.row} key={i}>
-              <span className={styles.slotNum}>第{s.slot.toString().padStart(2, '0')}节</span>
+              <span className={styles.slotNum}>第{s.slot}节</span>
               <input
-                className={clsx(styles.input, errors[i] && styles.error)}
+                className={clsx(styles.input, errors[i]?.start && styles.error)}
                 type="text"
                 value={s.startTime}
                 onChange={e => updateSlot(i, 'startTime', e.target.value)}
                 placeholder="HH:mm"
               />
               <input
-                className={clsx(styles.input, errors[i] && styles.error)}
+                className={clsx(styles.input, errors[i]?.end && styles.error)}
                 type="text"
                 value={s.endTime}
                 onChange={e => updateSlot(i, 'endTime', e.target.value)}
@@ -137,8 +163,12 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
           </div>
           <div className={styles.rightActions}>
             <button className={styles.cancelBtn} onClick={onClose}>取消</button>
-            <button className={styles.confirmBtn} onClick={handleSave} disabled={hasErrors}>
-              保存
+            <button
+              className={clsx(styles.confirmBtn, saved && styles.savedBtn)}
+              onClick={handleSave}
+              disabled={hasErrors || saved}
+            >
+              {saved ? '已保存 ✓' : '保存'}
             </button>
           </div>
         </div>

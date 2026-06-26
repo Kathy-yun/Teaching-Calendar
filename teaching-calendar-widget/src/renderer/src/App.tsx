@@ -86,7 +86,8 @@ function App() {
   // 保存上课时间设置
   const handleSaveTimeSlots = useCallback((slots: TimeSlot[]) => {
     setTimeSlots(slots)
-  }, [setTimeSlots])
+    generateClassTodos()
+  }, [setTimeSlots, generateClassTodos])
 
   const handleDateSelect = useCallback((date: string) => {
     setSelectedDate(date)
