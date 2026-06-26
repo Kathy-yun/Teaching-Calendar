@@ -70,15 +70,6 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
     setSlots(prev => [...prev, { slot: maxSlot + 1, startTime: '08:00', endTime: '08:45' }])
   }
 
-  const handleDelete = (index: number) => {
-    setSlots(prev => prev.filter((_, i) => i !== index))
-    setErrors(prev => {
-      const next = { ...prev }
-      delete next[index]
-      return next
-    })
-  }
-
   const handleReset = () => {
     setSlots(getDefaultTimeSlots())
     setErrors({})
@@ -100,11 +91,10 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
             <span>上课时间</span>
             <span>下课时间</span>
             <span>标签</span>
-            <span />
           </div>
           {slots.map((s, i) => (
             <div className={styles.row} key={i}>
-              <span className={styles.slotNum}>第{s.toString().padStart(2, '0')}节</span>
+              <span className={styles.slotNum}>第{s.slot.toString().padStart(2, '0')}节</span>
               <input
                 className={clsx(styles.input, errors[i] && styles.error)}
                 type="text"
@@ -126,14 +116,6 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
                 onChange={e => updateSlot(i, 'label', e.target.value)}
                 placeholder="可选"
               />
-              <button
-                className={styles.delBtn}
-                onClick={() => handleDelete(i)}
-                disabled={slots.length <= 1}
-                title="删除"
-              >
-                ×
-              </button>
             </div>
           ))}
         </div>
