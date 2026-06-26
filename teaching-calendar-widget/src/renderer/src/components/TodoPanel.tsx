@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import { addDays } from 'date-fns'
 import type { TodoItem, ClassEntry, TimeSlot } from '@shared/types'
 import { TodoModal } from './TodoModal'
+import { TimeSlotModal } from './TimeSlotModal'
 import styles from './TodoPanel.module.css'
 
 interface TodoPanelProps {
@@ -16,14 +17,15 @@ interface TodoPanelProps {
   onDelete: (id: string) => void
   onUploadSchedule: () => void
   onRemoveSchedule: () => void
-  onUploadTimeSlots: () => void
+  onSaveTimeSlots: (slots: TimeSlot[]) => void
 }
 
 export function TodoPanel({
   todos, selectedDate, classEntries, timeSlots,
-  onAdd, onToggle, onDelete, onUploadSchedule, onRemoveSchedule, onUploadTimeSlots
+  onAdd, onToggle, onDelete, onUploadSchedule, onRemoveSchedule, onSaveTimeSlots
 }: TodoPanelProps) {
   const [showModal, setShowModal] = useState(false)
+  const [showTimeSlotModal, setShowTimeSlotModal] = useState(false)
 
   const handleAdd = (date: string, content: string) => {
     onAdd(date, content)
@@ -96,7 +98,7 @@ export function TodoPanel({
               上传课表
             </button>
           )}
-          <button className={styles.timeBtn} onClick={onUploadTimeSlots} title="上传上课时间">
+          <button className={styles.timeBtn} onClick={() => setShowTimeSlotModal(true)} title="上课时间设置">
             时间表
           </button>
           <button className={styles.addBtn} onClick={() => setShowModal(true)}>
@@ -134,6 +136,14 @@ export function TodoPanel({
           defaultDate={selectedDate || format(new Date(), 'yyyy-MM-dd')}
           onConfirm={handleAdd}
           onClose={() => setShowModal(false)}
+        />
+      )}
+
+      {showTimeSlotModal && (
+        <TimeSlotModal
+          timeSlots={timeSlots}
+          onSave={onSaveTimeSlots}
+          onClose={() => setShowTimeSlotModal(false)}
         />
       )}
     </div>

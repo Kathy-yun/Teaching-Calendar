@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react'
 import { format } from 'date-fns'
 import { TitleBar } from './components/TitleBar'
 import { MonthView } from './components/MonthView'
+import type { TimeSlot } from '@shared/types'
 import { TodoPanel } from './components/TodoPanel'
 import { UploadPanel } from './components/UploadPanel'
 import { useCalendarStore } from './store/calendarStore'
@@ -76,37 +77,16 @@ function App() {
     }
   }, [setClassEntries, generateClassTodos, removeAutoTodos, calendar, classEntries.length, setLoading])
 
-  // 上传上课时间映射表
-  const handleTimeSlotsUpload = useCallback(async () => {
-    try {
-      const result = await (window as any).widgetAPI?.openFile?.()
-      if (!result) return
-
-      const readResult = await (window as any).widgetAPI?.readFile?.(result)
-      if (!readResult) return
-
-      setLoading(true)
-      const buffer = new Uint8Array(readResult.buffer).buffer
-      const parseResult = parseTimeSlotsFile(buffer)
-
-      if (parseResult.success && parseResult.data) {
-        setTimeSlots(parseResult.data)
-      } else {
-        alert(parseResult.errors.join('\n') || '解析失败')
-      }
-    } catch (err) {
-      console.error('上传时间映射表失败:', err)
-      alert('上传失败')
-    } finally {
-      setLoading(false)
-    }
-  }, [setTimeSlots, setLoading])
-
   // 移除课表
   const handleRemoveSchedule = useCallback(() => {
     removeAutoTodos()
     setClassEntries([])
   }, [removeAutoTodos, setClassEntries])
+
+  // 保存上课时间设置
+  const handleSaveTimeSlots = useCallback((slots: TimeSlot[]) => {
+    setTimeSlots(slots)
+  }, [setTimeSlots])
 
   const handleDateSelect = useCallback((date: string) => {
     setSelectedDate(date)
@@ -188,7 +168,7 @@ function App() {
             onDelete={deleteTodo}
             onUploadSchedule={handleScheduleUpload}
             onRemoveSchedule={handleRemoveSchedule}
-            onUploadTimeSlots={handleTimeSlotsUpload}
+            onSaveTimeSlots={handleSaveTimeSlots}
           />
         </>
       )}
