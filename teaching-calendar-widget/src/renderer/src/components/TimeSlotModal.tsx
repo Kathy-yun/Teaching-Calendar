@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import clsx from 'clsx'
 import type { TimeSlot } from '@shared/types'
 import { getDefaultTimeSlots } from '../parsers/scheduleParser'
@@ -96,9 +96,10 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
 
         <div className={styles.table}>
           <div className={clsx(styles.row, styles.headerRow)}>
-            <span>节次</span>
-            <span>上课时间</span>
-            <span>下课时间</span>
+            <span className={styles.headerCell}>节次</span>
+            <span className={styles.headerCell}>上课时间</span>
+            <span className={styles.headerCell}>下课时间</span>
+            <span />
           </div>
           {slots.map((s, i) => (
             <div className={styles.row} key={i}>
