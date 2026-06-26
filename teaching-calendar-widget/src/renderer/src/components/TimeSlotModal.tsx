@@ -99,8 +99,6 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
             <span>节次</span>
             <span>上课时间</span>
             <span>下课时间</span>
-            <span>标签</span>
-            <span />
           </div>
           {slots.map((s, i) => (
             <div className={styles.row} key={i}>
@@ -118,12 +116,6 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
                 value={s.endTime}
                 onChange={e => updateSlot(i, 'endTime', e.target.value)}
                 placeholder="HH:mm"
-              />
-              <input
-                className={styles.input}
-                type="text"
-                value={s.label || ''}
-                onChange={e => updateSlot(i, 'label', e.target.value)}
               />
               <button
                 className={styles.delBtn}
