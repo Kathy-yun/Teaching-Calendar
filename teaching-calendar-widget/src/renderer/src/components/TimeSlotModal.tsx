@@ -124,7 +124,6 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
                 type="text"
                 value={s.label || ''}
                 onChange={e => updateSlot(i, 'label', e.target.value)}
-                placeholder="可选"
               />
               <button
                 className={styles.delBtn}
