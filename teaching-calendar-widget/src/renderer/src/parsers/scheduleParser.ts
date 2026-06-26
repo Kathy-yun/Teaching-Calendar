@@ -1,5 +1,12 @@
 import * as XLSX from 'xlsx'
-import type { TimeSlot, TimeSlotsResult, ClassEntry, ClassScheduleResult } from '@shared/types'
+import type { TimeSlot, ClassEntry } from '@shared/types'
+
+// 内部返回类型（不导出，仅函数签名使用）
+interface ParserResult<T> {
+  success: boolean
+  data?: T
+  errors: string[]
+}
 
 const DAY_MAP: Record<string, number> = {
   '星期一': 1, '周一': 1, '1': 1, '一': 1,
@@ -17,7 +24,7 @@ const DAY_MAP: Record<string, number> = {
  * 1. 列结构: A=节次 | B=开始时间(HH:mm) | C=结束时间(HH:mm) | D=可选标签
  * 2. 如果解析失败则返回空数组，使用默认时间映射
  */
-export function parseTimeSlotsFile(buffer: ArrayBuffer): TimeSlotsResult {
+export function parseTimeSlotsFile(buffer: ArrayBuffer): ParserResult<TimeSlot[]> {
   try {
     const workbook = XLSX.read(buffer, { type: 'array' })
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
@@ -76,7 +83,7 @@ export function parseTimeSlotsFile(buffer: ArrayBuffer): TimeSlotsResult {
  *   Row A列: 节次标签 (如 "第12节", "第34节", "午12节", "晚12节"...)
  *   Cells: 多行文本 = 课程名\n周次\n教室\n班级
  */
-export function parseClassScheduleFile(buffer: ArrayBuffer): ClassScheduleResult {
+export function parseClassScheduleFile(buffer: ArrayBuffer): ParserResult<ClassEntry[]> {
   try {
     const workbook = XLSX.read(buffer, { type: 'array' })
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
@@ -264,82 +271,12 @@ function parseWeekRanges(text: string): number[] {
 }
 
 /**
- * 根据日期获取对应的教学周次
- */
-export function getWeekNumberForDate(dateStr: string, teachingWeeks: { weekNumber: number; startDate: string; endDate: string }[]): number | null {
-  for (const tw of teachingWeeks) {
-    if (dateStr >= tw.startDate && dateStr <= tw.endDate) {
-      return tw.weekNumber
-    }
-  }
-  return null
-}
-
-/**
  * 获取日期对应的星期几 (1=周一 ... 7=周日)
  */
 export function getDayOfWeek(dateStr: string): number {
   const d = new Date(dateStr + 'T00:00:00')
   const day = d.getDay()
   return day === 0 ? 7 : day
-}
-
-/**
- * 根据 ClassEntry 和 TimeSlot 生成 TodoItem 的内容文本
- */
-export function formatClassEntryContent(entry: ClassEntry, timeSlot?: TimeSlot): string {
-  const parts: string[] = []
-
-  if (timeSlot) {
-    parts.push(`${timeSlot.startTime}-${timeSlot.endTime}`)
-  }
-
-  parts.push(entry.course)
-
-  if (entry.classroom) {
-    parts.push(entry.classroom)
-  }
-
-  return parts.join(' ')
-}
-
-/**
- * 为指定日期生成该日所有课表条目的 TodoItem 列表
- */
-export function generateClassTodosForDate(
-  dateStr: string,
-  classEntries: ClassEntry[],
-  timeSlots: TimeSlot[],
-  teachingWeeks: { weekNumber: number; startDate: string; endDate: string }[]
-): { todo: import('@shared/types').TodoItem; entry: ClassEntry }[] {
-  const weekNum = getWeekNumberForDate(dateStr, teachingWeeks)
-  if (!weekNum) return []
-
-  const dayOfWeek = getDayOfWeek(dateStr)
-
-  // 筛选当天、当前周的课表条目（week=0 表示每周都有）
-  const matched = classEntries.filter(e => e.week === 0 || e.week === weekNum)
-  const todayEntries = matched.filter(e => e.dayOfWeek === dayOfWeek)
-
-  const slotMap = new Map(timeSlots.map(s => [s.slot, s]))
-
-  return todayEntries
-    .sort((a, b) => a.slot - b.slot)
-    .map(entry => {
-      const timeSlot = slotMap.get(entry.slot)
-      const content = formatClassEntryContent(entry, timeSlot)
-      return {
-        todo: {
-          id: `class-${entry.id}-${dateStr}`,
-          date: dateStr,
-          content,
-          completed: false,
-          createdAt: new Date().toISOString(),
-          courseEntryId: entry.id
-        },
-        entry
-      }
-    })
 }
 
 /**

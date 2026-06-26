@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isToday, getDay, addDays } from 'date-fns'
 import clsx from 'clsx'
 import type { TeachingCalendar, CalendarDay, ClassEntry, TimeSlot } from '@shared/types'
-import { getWeekNumberForDate, getDayOfWeek } from '../parsers/scheduleParser'
+import { getDayOfWeek } from '../parsers/scheduleParser'
 import styles from './MonthView.module.css'
 
 interface MonthViewProps {
@@ -122,7 +122,6 @@ function DayCell({ day, isSelected, onClick, onDoubleClick }: { day: CalendarDay
       <span className={clsx(styles.dayNum, day.isToday && styles.todayNum)}>
         {day.date ? format(new Date(day.date + 'T00:00:00'), 'd') : ''}
       </span>
-      {day.todos.length > 0 && <span className={styles.todoDot}>•</span>}
       {day.hasClass && <span className={styles.classBadge}>课</span>}
     </div>
   )
@@ -184,7 +183,6 @@ function buildMonthDays(
       isCurrentMonth: inMonth,
       isToday: isToday(d),
       teachingWeek,
-      todos: [],
       hasClass
     })
   }

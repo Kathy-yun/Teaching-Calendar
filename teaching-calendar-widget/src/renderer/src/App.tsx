@@ -27,9 +27,6 @@ function App() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
 
-  const previousCalendar = useCalendarStore((s) => s.previousCalendar)
-  const goBack = useCalendarStore((s) => s.goBack)
-
   const clearAll = useCalendarStore((s) => s.clearAll)
 
   const handleFileUpload = useCallback(async (file: File) => {
@@ -160,7 +157,6 @@ function App() {
       <TitleBar
         semester={headerTitle}
         weekInfo={calendar && selectedTeachingWeek ? `第 ${selectedTeachingWeek} 周` : ''}
-        onBack={!calendar && previousCalendar ? goBack : undefined}
       />
 
       {!calendar ? (

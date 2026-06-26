@@ -5,18 +5,12 @@ import styles from './TitleBar.module.css'
 interface TitleBarProps {
   semester: string
   weekInfo: string
-  onBack?: () => void
 }
 
-export function TitleBar({ semester, weekInfo, onBack }: TitleBarProps) {
+export function TitleBar({ semester, weekInfo }: TitleBarProps) {
   return (
     <div className={styles.titleBar}>
       <div className={styles.left}>
-        {onBack && (
-          <button className={styles.backBtn} onClick={onBack} title="返回">
-            ←
-          </button>
-        )}
         <div className={styles.title}>
           <span className={styles.semester}>{semester}</span>
           {weekInfo && <span className={styles.weekBadge}>{weekInfo}</span>}

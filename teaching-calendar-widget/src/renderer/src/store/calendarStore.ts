@@ -1,11 +1,9 @@
 import { create } from 'zustand'
-import type { TeachingCalendar, ParseResult, TodoItem, TimeSlot, ClassEntry } from '@shared/types'
+import type { TeachingCalendar, TodoItem, TimeSlot, ClassEntry } from '@shared/types'
 import { getDayOfWeek, getDefaultTimeSlots } from '../parsers/scheduleParser'
 
 interface CalendarState {
   currentCalendar: TeachingCalendar | null
-  previousCalendar: TeachingCalendar | null
-  parseResults: ParseResult[]
   isLoading: boolean
   todos: TodoItem[]
 
@@ -14,15 +12,12 @@ interface CalendarState {
   classEntries: ClassEntry[]
 
   setCalendar: (calendar: TeachingCalendar) => void
-  addParseResult: (result: ParseResult) => void
-  removeParseResult: (id: string) => void
   setLoading: (loading: boolean) => void
   addTodo: (todo: TodoItem) => void
   toggleTodo: (id: string) => void
   deleteTodo: (id: string) => void
   getTodosForDate: (date: string) => TodoItem[]
   clearAll: () => void
-  goBack: () => void
 
   // 时间映射表
   setTimeSlots: (slots: TimeSlot[]) => void
@@ -35,8 +30,6 @@ interface CalendarState {
 
 export const useCalendarStore = create<CalendarState>((set, get) => ({
   currentCalendar: null,
-  previousCalendar: null,
-  parseResults: [],
   isLoading: false,
   todos: [],
   timeSlots: [],
@@ -44,16 +37,6 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
   setCalendar: (calendar) =>
     set({ currentCalendar: calendar }),
-
-  addParseResult: (result) =>
-    set((state) => ({
-      parseResults: [...state.parseResults, result]
-    })),
-
-  removeParseResult: (id) =>
-    set((state) => ({
-      parseResults: state.parseResults.filter(r => r.data?.id !== id)
-    })),
 
   setLoading: (loading) =>
     set({ isLoading: loading }),
@@ -79,19 +62,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     get().todos.filter(t => t.date === date),
 
   clearAll: () =>
-    set((state) => ({
+    set({
       currentCalendar: null,
-      previousCalendar: state.currentCalendar,
-      parseResults: [],
       todos: [],
       classEntries: []
-    })),
-
-  goBack: () =>
-    set((state) => ({
-      currentCalendar: state.previousCalendar,
-      previousCalendar: null
-    })),
+    }),
 
   // 设置上课时间映射表
   setTimeSlots: (slots) =>

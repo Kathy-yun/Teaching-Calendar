@@ -12,7 +12,7 @@ export async function parseFile(file: File): Promise<ParseResult> {
   switch (ext) {
     case 'xls':
     case 'xlsx':
-      return parseXlsFile(buffer, file.name)
+      return parseXlsFile(buffer)
     default:
       return {
         success: false,

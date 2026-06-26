@@ -5,7 +5,7 @@ import type { ParseResult, TeachingCalendar, TeachingWeekRange } from '@shared/t
  * 使用 SheetJS 解析 XLS 文件
  * 列结构: A=周次 | B=起始日(空/合并) | C=周一(数字) | D=周二 | ... | H=周六(MM月DD日) | I=备注
  */
-export function parseXlsFile(buffer: ArrayBuffer, fileName: string): ParseResult {
+export function parseXlsFile(buffer: ArrayBuffer): ParseResult {
   try {
     const workbook = XLSX.read(buffer, { type: 'array' })
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
@@ -61,7 +61,6 @@ export function parseXlsFile(buffer: ArrayBuffer, fileName: string): ParseResult
             weekNumber: weekNum,
             startDate: toISO(mon),
             endDate: toISO(sun),
-            content: []
           })
           continue
         }
@@ -77,7 +76,6 @@ export function parseXlsFile(buffer: ArrayBuffer, fileName: string): ParseResult
           weekNumber: weekNum,
           startDate: toISO(new Date(baseYear, month - 1, monDay)),
           endDate: toISO(new Date(baseYear, month - 1, satDay)),
-          content: []
         })
       }
     }
@@ -97,11 +95,8 @@ export function parseXlsFile(buffer: ArrayBuffer, fileName: string): ParseResult
 
     const calendar: TeachingCalendar = {
       id: crypto.randomUUID(),
-      fileName,
-      fileFormat: 'xls',
       semester: title,
       teachingWeeks,
-      createdAt: new Date().toISOString()
     }
 
     return {
