@@ -1,19 +1,16 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import { format } from 'date-fns'
+import { useCalendarStore } from './store/calendarStore'
 import { TitleBar } from './components/TitleBar'
 import { MonthView } from './components/MonthView'
 import type { TimeSlot } from '@shared/types'
 import { TodoPanel } from './components/TodoPanel'
-import { UploadPanel } from './components/UploadPanel'
-import { useCalendarStore } from './store/calendarStore'
 import { parseFile, parseClassScheduleFile, parseTimeSlotsFile } from './parsers'
 import styles from './App.module.css'
 
 function App() {
   const calendar = useCalendarStore((s) => s.currentCalendar)
   const setCalendar = useCalendarStore((s) => s.setCalendar)
-  const isLoading = useCalendarStore((s) => s.isLoading)
-  const setLoading = useCalendarStore((s) => s.setLoading)
   const todos = useCalendarStore((s) => s.todos)
   const addTodo = useCalendarStore((s) => s.addTodo)
   const toggleTodo = useCalendarStore((s) => s.toggleTodo)
@@ -24,11 +21,10 @@ function App() {
   const setClassEntries = useCalendarStore((s) => s.setClassEntries)
   const generateClassTodos = useCalendarStore((s) => s.generateClassTodos)
   const removeAutoTodos = useCalendarStore((s) => s.removeAutoTodos)
+  const setLoading = useCalendarStore((s) => s.setLoading)
 
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
-
-  const clearAll = useCalendarStore((s) => s.clearAll)
 
   const handleFileUpload = useCallback(async (file: File) => {
     const result = await parseFile(file)
@@ -39,6 +35,23 @@ function App() {
       setSelectedDate(format(today, 'yyyy-MM-dd'))
     }
   }, [setCalendar])
+
+  const handleChangeCalendar = useCallback(async () => {
+    try {
+      const result = await (window as any).widgetAPI?.openFile?.()
+      if (!result) return
+
+      const readResult = await (window as any).widgetAPI?.readFile?.(result)
+      if (!readResult) return
+
+      const buffer = new Uint8Array(readResult.buffer).buffer
+      const file = new File([buffer], result, { type: 'application/octet-stream' })
+      await handleFileUpload(file)
+    } catch (err) {
+      console.error('上传教学周历失败:', err)
+      alert('上传失败')
+    }
+  }, [handleFileUpload])
 
   // 上传上课课表
   const handleScheduleUpload = useCallback(async () => {
@@ -140,39 +153,31 @@ function App() {
         weekInfo={calendar && selectedTeachingWeek ? `第 ${selectedTeachingWeek} 周` : ''}
       />
 
-      {!calendar ? (
-        <div className={styles.empty}>
-          <UploadPanel onFile={handleFileUpload} isLoading={isLoading} />
-        </div>
-      ) : (
-        <>
-          <MonthView
-            calendar={calendar}
-            currentDate={currentDate}
-            selectedDate={selectedDate}
-            onDateChange={setCurrentDate}
-            onDateSelect={handleDateSelect}
-            onDateDoubleClick={handleDateDoubleClick}
-            onBackToToday={handleBackToToday}
-            onChangeCalendar={clearAll}
-            classEntries={classEntries}
-            timeSlots={timeSlots}
-          />
+      <MonthView
+        calendar={calendar}
+        currentDate={currentDate}
+        selectedDate={selectedDate}
+        onDateChange={setCurrentDate}
+        onDateSelect={handleDateSelect}
+        onDateDoubleClick={handleDateDoubleClick}
+        onBackToToday={handleBackToToday}
+        onChangeCalendar={handleChangeCalendar}
+        classEntries={classEntries}
+        timeSlots={timeSlots}
+      />
 
-          <TodoPanel
-            todos={todos}
-            selectedDate={selectedDate}
-            classEntries={classEntries}
-            timeSlots={timeSlots}
-            onAdd={handleAddTodo}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
-            onUploadSchedule={handleScheduleUpload}
-            onRemoveSchedule={handleRemoveSchedule}
-            onSaveTimeSlots={handleSaveTimeSlots}
-          />
-        </>
-      )}
+      <TodoPanel
+        todos={todos}
+        selectedDate={selectedDate}
+        classEntries={classEntries}
+        timeSlots={timeSlots}
+        onAdd={handleAddTodo}
+        onToggle={toggleTodo}
+        onDelete={deleteTodo}
+        onUploadSchedule={handleScheduleUpload}
+        onRemoveSchedule={handleRemoveSchedule}
+        onSaveTimeSlots={handleSaveTimeSlots}
+      />
     </div>
   )
 }

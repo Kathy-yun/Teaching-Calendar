@@ -6,14 +6,14 @@ import { getDayOfWeek } from '../parsers/scheduleParser'
 import styles from './MonthView.module.css'
 
 interface MonthViewProps {
-  calendar: TeachingCalendar
+  calendar: TeachingCalendar | null | undefined
   currentDate: Date
   selectedDate: string | null
   onDateChange: (date: Date) => void
   onDateSelect: (date: string) => void
   onDateDoubleClick: (date: string) => void
   onBackToToday: () => void
-  onChangeCalendar: () => void
+  onChangeCalendar?: () => void
   classEntries?: ClassEntry[]
   timeSlots?: TimeSlot[]
 }
@@ -23,7 +23,7 @@ export function MonthView({
   onDateSelect, onDateDoubleClick, onBackToToday, onChangeCalendar,
   classEntries = [], timeSlots = []
 }: MonthViewProps) {
-  const days = useMemo(() => buildMonthDays(currentDate, calendar, classEntries, timeSlots), [currentDate, calendar, classEntries, timeSlots])
+  const days = useMemo(() => buildMonthDays(currentDate, calendar || { id: '', semester: '', teachingWeeks: [] }, classEntries, timeSlots), [currentDate, calendar, classEntries, timeSlots])
 
   const weekdays = ['一', '二', '三', '四', '五', '六', '日']
 
@@ -90,14 +90,14 @@ export function MonthView({
         ))}
       </div>
 
-      {/* Footer with "回到今天" and "更换教学周历" buttons */}
+      {/* Footer with "回到今天" and "上传/更换教学周历" buttons */}
       <div className={styles.footer}>
         <button className={styles.todayBtn} onClick={onBackToToday}>
           回到今天
         </button>
         {onChangeCalendar && (
           <button className={styles.changeBtn} onClick={onChangeCalendar}>
-            更换教学周历
+            {calendar ? '更换教学周历' : '上传教学周历'}
           </button>
         )}
       </div>
