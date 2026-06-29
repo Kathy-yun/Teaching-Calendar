@@ -22,17 +22,17 @@
 .footer {
   display: flex;
   justify-content: center;
-  padding: 8px 14px 12px;
+  padding: 1.2cqw 2cqw 1.6cqw;
   background: rgba(0, 0, 0, 0.15);
 }
 
 .changeBtn {
-  padding: 6px 20px;
+  padding: 0.8cqw 2.4cqw;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  border-radius: 0.8cqw;
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
+  font-size: 2.4cqw;
   cursor: pointer;
   transition: all 0.15s;
 }

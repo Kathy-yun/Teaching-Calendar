@@ -1,21 +1,22 @@
 .container {
-  padding: 0 12px 12px;
+  padding: 0 1.2cqw 1.2cqw;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 10px;
-  max-height: 320px;
+  padding-top: 1.2cqw;
+  max-height: 50cqw;
   display: flex;
   flex-direction: column;
+  container-type: inline-size;
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 1.2cqw;
 }
 
 .title {
-  font-size: 15px;
+  font-size: 3cqw;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.85);
   letter-spacing: 0.5px;
@@ -24,16 +25,16 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.8cqw;
 }
 
 .addBtn {
-  padding: 5px 14px;
+  padding: 0.6cqw 2cqw;
   border: 1px solid rgba(96, 165, 250, 0.3);
-  border-radius: 6px;
+  border-radius: 0.8cqw;
   background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
-  font-size: 11px;
+  font-size: 2.5cqw;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -50,12 +51,12 @@
 }
 
 .uploadScheduleBtn {
-  padding: 5px 14px;
+  padding: 0.6cqw 2cqw;
   border: 1px solid rgba(52, 211, 153, 0.3);
-  border-radius: 6px;
+  border-radius: 0.8cqw;
   background: rgba(52, 211, 153, 0.1);
   color: #34d399;
-  font-size: 11px;
+  font-size: 1.8cqw;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -69,12 +70,12 @@
 }
 
 .removeScheduleBtn {
-  padding: 5px 14px;
+  padding: 0.6cqw 2cqw;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  border-radius: 0.8cqw;
   background: transparent;
   color: rgba(255, 255, 255, 0.35);
-  font-size: 11px;
+  font-size: 2.5cqw;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -87,12 +88,12 @@
 }
 
 .timeBtn {
-  padding: 5px 14px;
+  padding: 0.6cqw 2cqw;
   border: 1px solid rgba(96, 165, 250, 0.2);
-  border-radius: 6px;
+  border-radius: 0.8cqw;
   background: rgba(96, 165, 250, 0.08);
   color: rgba(96, 165, 250, 0.75);
-  font-size: 11px;
+  font-size: 2.5cqw;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -106,24 +107,24 @@
 }
 
 .empty {
-  font-size: 11px;
+  font-size: 2.5cqw;
   color: rgba(255, 255, 255, 0.25);
   text-align: center;
-  padding: 14px 0;
+  padding: 2cqw 0;
   letter-spacing: 0.3px;
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-height: 200px;
+  gap: 0.8cqw;
+  max-height: 30cqw;
   overflow-y: auto;
   flex: 1;
 }
 
 .list::-webkit-scrollbar {
-  width: 4px;
+  width: 0.4cqw;
 }
 
 .list::-webkit-scrollbar-track {
@@ -132,7 +133,7 @@
 
 .list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  border-radius: 0.2cqw;
 }
 
 .list::-webkit-scrollbar-thumb:hover {
@@ -142,9 +143,9 @@
 .item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: 7px;
+  gap: 1.2cqw;
+  padding: 1.2cqw 1.4cqw;
+  border-radius: 0.8cqw;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.2s ease;
@@ -160,13 +161,13 @@
 }
 
 .check {
-  width: 19px;
-  height: 19px;
+  width: 3.2cqw;
+  height: 3.2cqw;
   border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
+  font-size: 1.8cqw;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -184,7 +185,7 @@
 
 .content {
   flex: 1;
-  font-size: 12px;
+  font-size: 2.6cqw;
   color: rgba(255, 255, 255, 0.7);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -198,21 +199,21 @@
 }
 
 .dateTag {
-  font-size: 11px;
+  font-size: 2.2cqw;
   color: #60a5fa;
-  margin-right: 5px;
+  margin-right: 0.8cqw;
   font-weight: 600;
   letter-spacing: 0.2px;
 }
 
 .del {
-  width: 19px;
-  height: 19px;
+  width: 3.2cqw;
+  height: 3.2cqw;
   border: none;
-  border-radius: 4px;
+  border-radius: 0.4cqw;
   background: transparent;
   color: rgba(255, 255, 255, 0.2);
-  font-size: 15px;
+  font-size: 2.4cqw;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -250,23 +251,23 @@
 .classMain {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 1cqw;
 }
 
 .classTime {
-  font-size: 11px;
+  font-size: 2.2cqw;
   font-weight: 700;
   color: #fbbf24;
   background: rgba(251, 191, 36, 0.15);
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 0.6cqw 1.2cqw;
+  border-radius: 0.4cqw;
   flex-shrink: 0;
   letter-spacing: 0.2px;
   border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 .className {
-  font-size: 13px;
+  font-size: 2.8cqw;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   overflow: hidden;
@@ -278,28 +279,28 @@
 .classDetail {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 3px;
+  gap: 1cqw;
+  margin-top: 0.4cqw;
 }
 
 .classRoom {
-  font-size: 11px;
+  font-size: 2.2cqw;
   color: rgba(96, 165, 250, 0.75);
   font-weight: 500;
 }
 
 .classGroup {
-  font-size: 10px;
+  font-size: 2cqw;
   color: rgba(255, 255, 255, 0.4);
 }
 
 .classTag {
-  font-size: 10px;
+  font-size: 2cqw;
   font-weight: 700;
   color: rgba(251, 191, 36, 0.75);
   background: rgba(251, 191, 36, 0.12);
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 0.6cqw 1.2cqw;
+  border-radius: 0.4cqw;
   flex-shrink: 0;
   letter-spacing: 0.5px;
 }

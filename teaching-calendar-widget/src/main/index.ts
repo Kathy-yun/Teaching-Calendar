@@ -26,6 +26,8 @@ function createWindow(): void {
     height: 600,
     minWidth: 400,
     minHeight: 600,
+    maxWidth: 600,
+    maxHeight: 900,
     x: width - 420,
     y: 40,
     frame: false,
