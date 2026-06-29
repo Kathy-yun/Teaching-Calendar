@@ -96,11 +96,7 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.7);
   padding: 4px 0;
-  letter-spacing: 0.5px;
-}
-
-.weekday.weekend {
-  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.3px;
 }
 
 /* Day grid */
