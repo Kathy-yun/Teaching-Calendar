@@ -18,18 +18,22 @@ interface TodoPanelProps {
   onUploadSchedule: () => void
   onRemoveSchedule: () => void
   onSaveTimeSlots: (slots: TimeSlot[]) => void
+  showTodoModal: boolean
+  todoModalDate: string | null
+  onCloseTodoModal: () => void
+  onOpenTodoModal: (date: string) => void
 }
 
 export function TodoPanel({
   todos, selectedDate, classEntries, timeSlots,
-  onAdd, onToggle, onDelete, onUploadSchedule, onRemoveSchedule, onSaveTimeSlots
+  onAdd, onToggle, onDelete, onUploadSchedule, onRemoveSchedule, onSaveTimeSlots,
+  showTodoModal, todoModalDate, onCloseTodoModal, onOpenTodoModal
 }: TodoPanelProps) {
-  const [showModal, setShowModal] = useState(false)
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false)
 
   const handleAdd = (date: string, content: string) => {
     onAdd(date, content)
-    setShowModal(false)
+    onCloseTodoModal()
   }
 
   // 自动生成的课表条目（选中日期 + 未来几天）
@@ -101,7 +105,7 @@ export function TodoPanel({
           <button className={styles.timeBtn} onClick={() => setShowTimeSlotModal(true)} title="上课时间设置">
             时间表
           </button>
-          <button className={styles.addBtn} onClick={() => setShowModal(true)}>
+          <button className={styles.addBtn} onClick={() => { if (selectedDate) onOpenTodoModal(selectedDate) }}>
             + 添加
           </button>
         </div>
@@ -131,11 +135,11 @@ export function TodoPanel({
         </div>
       )}
 
-      {showModal && (
+      {showTodoModal && todoModalDate && (
         <TodoModal
-          defaultDate={selectedDate || format(new Date(), 'yyyy-MM-dd')}
+          defaultDate={todoModalDate}
           onConfirm={handleAdd}
-          onClose={() => setShowModal(false)}
+          onClose={onCloseTodoModal}
         />
       )}
 

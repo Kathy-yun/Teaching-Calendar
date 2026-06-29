@@ -56,7 +56,7 @@
   border-radius: 0.8cqw;
   background: rgba(52, 211, 153, 0.1);
   color: #34d399;
-  font-size: 1.8cqw;
+  font-size: 2.5cqw;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -92,9 +92,9 @@
   border: 1px solid rgba(96, 165, 250, 0.2);
   border-radius: 0.8cqw;
   background: rgba(96, 165, 250, 0.08);
-  color: rgba(96, 165, 250, 0.75);
+  color: #60a5fa;
   font-size: 2.5cqw;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   letter-spacing: 0.3px;
@@ -185,7 +185,7 @@
 
 .content {
   flex: 1;
-  font-size: 2.6cqw;
+  font-size: 3cqw;
   color: rgba(255, 255, 255, 0.7);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -199,7 +199,7 @@
 }
 
 .dateTag {
-  font-size: 2.2cqw;
+  font-size: 2.5cqw;
   color: #60a5fa;
   margin-right: 0.8cqw;
   font-weight: 600;
@@ -267,7 +267,7 @@
 }
 
 .className {
-  font-size: 2.8cqw;
+  font-size: 3.2cqw;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   overflow: hidden;
@@ -284,13 +284,13 @@
 }
 
 .classRoom {
-  font-size: 2.2cqw;
+  font-size: 2.8cqw;
   color: rgba(96, 165, 250, 0.75);
   font-weight: 500;
 }
 
 .classGroup {
-  font-size: 2cqw;
+  font-size: 2.4cqw;
   color: rgba(255, 255, 255, 0.4);
 }
 

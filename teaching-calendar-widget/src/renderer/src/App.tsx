@@ -27,6 +27,7 @@ function App() {
 
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
+  const [todoModalDate, setTodoModalDate] = useState<string | null>(null)
 
   const handleFileUpload = useCallback(async (file: File) => {
     const result = await parseFile(file)
@@ -123,6 +124,7 @@ function App() {
 
   const handleDateDoubleClick = useCallback((date: string) => {
     setSelectedDate(date)
+    setTodoModalDate(date)
   }, [])
 
   const handleAddTodo = useCallback((date: string, content: string) => {
@@ -193,6 +195,10 @@ function App() {
         onUploadSchedule={handleScheduleUpload}
         onRemoveSchedule={handleRemoveSchedule}
         onSaveTimeSlots={handleSaveTimeSlots}
+        showTodoModal={!!todoModalDate}
+        todoModalDate={todoModalDate}
+        onCloseTodoModal={() => setTodoModalDate(null)}
+        onOpenTodoModal={setTodoModalDate}
       />
     </div>
   )

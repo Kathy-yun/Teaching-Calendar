@@ -38,8 +38,14 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
   timeSlots: [],
   classEntries: [],
 
-  setCalendar: (calendar) =>
-    set({ currentCalendar: calendar }),
+  setCalendar: (calendar) => {
+    set({ currentCalendar: calendar })
+    // 上传教学周历后自动生成课表待办
+    const { classEntries, timeSlots } = get()
+    if (classEntries.length > 0) {
+      get().generateClassTodos()
+    }
+  },
 
   setLoading: (loading) =>
     set({ isLoading: loading }),
@@ -97,6 +103,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     }
 
     set({ currentCalendar: calendar })
+    // 手动设置教学周历后自动生成课表待办
+    const { classEntries } = get()
+    if (classEntries.length > 0) {
+      get().generateClassTodos()
+    }
   },
 
   // 设置上课时间映射表
