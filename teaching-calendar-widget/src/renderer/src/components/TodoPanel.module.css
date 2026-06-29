@@ -1,18 +1,24 @@
 .container {
   padding: 0 12px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 10px;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .title {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.5px;
 }
 
 .headerActions {
@@ -22,73 +28,89 @@
 }
 
 .addBtn {
-  padding: 3px 10px;
+  padding: 4px 12px;
   border: 1px solid rgba(96, 165, 250, 0.3);
-  border-radius: 4px;
-  background: rgba(96, 165, 250, 0.1);
+  border-radius: 5px;
+  background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
   font-size: 10px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
 }
 
 .addBtn:hover {
-  background: rgba(96, 165, 250, 0.2);
+  background: rgba(96, 165, 250, 0.25);
+  transform: translateY(-1px);
+}
+
+.addBtn:active {
+  transform: translateY(0);
 }
 
 .uploadScheduleBtn {
-  padding: 3px 10px;
+  padding: 4px 12px;
   border: 1px solid rgba(52, 211, 153, 0.3);
-  border-radius: 4px;
+  border-radius: 5px;
   background: rgba(52, 211, 153, 0.1);
   color: #34d399;
   font-size: 10px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
 }
 
 .uploadScheduleBtn:hover {
   background: rgba(52, 211, 153, 0.2);
   color: #6ee7b7;
+  transform: translateY(-1px);
 }
 
 .removeScheduleBtn {
-  padding: 3px 10px;
+  padding: 4px 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  border-radius: 5px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.35);
   font-size: 10px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
 }
 
 .removeScheduleBtn:hover {
   background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .timeBtn {
-  padding: 3px 10px;
+  padding: 4px 12px;
   border: 1px solid rgba(96, 165, 250, 0.2);
-  border-radius: 4px;
+  border-radius: 5px;
   background: rgba(96, 165, 250, 0.08);
-  color: rgba(96, 165, 250, 0.7);
+  color: rgba(96, 165, 250, 0.75);
   font-size: 10px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
 }
 
 .timeBtn:hover {
-  background: rgba(96, 165, 250, 0.15);
+  background: rgba(96, 165, 250, 0.18);
   color: #93c5fd;
+  transform: translateY(-1px);
 }
 
 .empty {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.25);
   text-align: center;
-  padding: 12px 0;
+  padding: 14px 0;
+  letter-spacing: 0.3px;
 }
 
 .list {
@@ -97,16 +119,40 @@
   gap: 4px;
   max-height: 200px;
   overflow-y: auto;
+  flex: 1;
+}
+
+.list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
-  border-radius: 6px;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .done {
@@ -114,9 +160,9 @@
 }
 
 .check {
-  width: 16px;
-  height: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 17px;
+  height: 17px;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
@@ -126,12 +172,14 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
 }
 
 .check:hover {
-  border-color: rgba(96, 165, 250, 0.5);
+  border-color: rgba(96, 165, 250, 0.6);
   color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+  transform: scale(1.1);
 }
 
 .content {
@@ -141,22 +189,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: 0.2px;
 }
 
 .done .content {
   text-decoration: line-through;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .dateTag {
   font-size: 10px;
-  color: rgba(96, 165, 250, 0.7);
-  margin-right: 4px;
+  color: #60a5fa;
+  margin-right: 5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 .del {
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   border: none;
   border-radius: 4px;
   background: transparent;
@@ -168,7 +219,7 @@
   justify-content: center;
   flex-shrink: 0;
   opacity: 0;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
 }
 
 .item:hover .del {
@@ -178,12 +229,17 @@
 .del:hover {
   background: rgba(239, 68, 68, 0.2);
   color: #f87171;
+  transform: scale(1.1);
 }
 
 /* ===== 课表条目样式 ===== */
 .classItem {
-  border-left: 2px solid rgba(251, 191, 36, 0.5);
+  border-left: 2px solid rgba(251, 191, 36, 0.6);
   background: rgba(251, 191, 36, 0.04);
+}
+
+.classItem:hover {
+  background: rgba(251, 191, 36, 0.07);
 }
 
 .classContent {
@@ -199,46 +255,51 @@
 
 .classTime {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   color: #fbbf24;
-  background: rgba(251, 191, 36, 0.12);
-  padding: 1px 5px;
-  border-radius: 3px;
+  background: rgba(251, 191, 36, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
   flex-shrink: 0;
+  letter-spacing: 0.2px;
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 .className {
   font-size: 12px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: 0.2px;
 }
 
 .classDetail {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .classRoom {
   font-size: 10px;
-  color: rgba(96, 165, 250, 0.7);
+  color: rgba(96, 165, 250, 0.75);
+  font-weight: 500;
 }
 
 .classGroup {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .classTag {
   font-size: 9px;
-  font-weight: 600;
-  color: rgba(251, 191, 36, 0.7);
-  background: rgba(251, 191, 36, 0.1);
-  padding: 1px 5px;
+  font-weight: 700;
+  color: rgba(251, 191, 36, 0.75);
+  background: rgba(251, 191, 36, 0.12);
+  padding: 2px 6px;
   border-radius: 3px;
   flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
