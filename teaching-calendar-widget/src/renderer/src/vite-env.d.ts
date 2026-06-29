@@ -16,6 +16,9 @@ declare global {
       openFile: () => Promise<string | null>
       readFile: (filePath: string) => Promise<{ fileName: string; buffer: number[] } | null>
       onFileDropped: (callback: (data: { fileName: string; buffer: number[] }) => void) => () => void
+      storeSave: (key: string, data: unknown) => Promise<boolean>
+      storeLoad: (key: string) => Promise<unknown>
+      storeClear: () => Promise<boolean>
     }
   }
 }

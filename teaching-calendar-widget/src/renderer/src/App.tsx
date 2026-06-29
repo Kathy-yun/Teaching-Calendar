@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import { format } from 'date-fns'
 import { useCalendarStore } from './store/calendarStore'
+import { usePersistStore } from './hooks/usePersistStore'
 import { TitleBar } from './components/TitleBar'
 import { MonthView } from './components/MonthView'
 import type { TimeSlot } from '@shared/types'
@@ -9,6 +10,9 @@ import { parseFile, parseClassScheduleFile, parseTimeSlotsFile } from './parsers
 import styles from './App.module.css'
 
 function App() {
+  // 启动时恢复持久化数据，并在 store 变化时自动保存
+  usePersistStore()
+
   const calendar = useCalendarStore((s) => s.currentCalendar)
   const setCalendar = useCalendarStore((s) => s.setCalendar)
   const setManualCalendar = useCalendarStore((s) => s.setManualCalendar)

@@ -13,5 +13,9 @@ contextBridge.exposeInMainWorld('widgetAPI', {
     const handler = (_event, data) => callback(data)
     ipcRenderer.on('file:dropped', handler)
     return () => ipcRenderer.removeListener('file:dropped', handler)
-  }
+  },
+  // ---- Persistence API ----
+  storeSave: (key, data) => ipcRenderer.invoke('store:save', key, data),
+  storeLoad: (key) => ipcRenderer.invoke('store:load', key),
+  storeClear: () => ipcRenderer.invoke('store:clear')
 })

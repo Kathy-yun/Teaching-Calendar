@@ -1,15 +1,28 @@
 import { app, BrowserWindow, Tray, Menu, screen, ipcMain, nativeImage, dialog } from 'electron'
 import path from 'path'
 import fs from 'fs'
+import Store from 'electron-store'
+
+const store = new Store<Record<string, unknown>>({
+  name: 'calendar-data',
+  defaults: {
+    currentCalendar: null,
+    todos: [],
+    timeSlots: [],
+    classEntries: []
+  }
+})
 
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 
 function getPreloadPath(): string {
-  const outPreload = path.join(__dirname, '../preload/preload.js')
-  if (fs.existsSync(outPreload)) return outPreload
+  // Always use src/preload/preload.js to avoid stale out/ copies
   const srcPreload = path.join(process.cwd(), 'src', 'preload', 'preload.js')
+  const outPreload = path.join(__dirname, '../preload/preload.js')
+
   if (fs.existsSync(srcPreload)) {
+    // Copy to out/ so BrowserWindow can load it via __dirname relative path
     const outDir = path.dirname(outPreload)
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true })
     fs.copyFileSync(srcPreload, outPreload)
@@ -79,6 +92,21 @@ function handleFileDrop(filePath: string): void {
     buffer: Array.from(new Uint8Array(buffer))
   })
 }
+
+// IPC: persist state
+ipcMain.handle('store:save', (_event, key: string, data: unknown) => {
+  store.set(key, data)
+  return true
+})
+
+ipcMain.handle('store:load', (_event, key: string) => {
+  return store.get(key, null)
+})
+
+ipcMain.handle('store:clear', () => {
+  store.clear()
+  return true
+})
 
 // IPC: open file dialog as fallback
 ipcMain.handle('dialog:openFile', async () => {
