@@ -15,7 +15,7 @@
 }
 
 .title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.85);
   letter-spacing: 0.5px;
@@ -28,12 +28,12 @@
 }
 
 .addBtn {
-  padding: 4px 12px;
+  padding: 5px 14px;
   border: 1px solid rgba(96, 165, 250, 0.3);
-  border-radius: 5px;
+  border-radius: 6px;
   background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -50,12 +50,12 @@
 }
 
 .uploadScheduleBtn {
-  padding: 4px 12px;
+  padding: 5px 14px;
   border: 1px solid rgba(52, 211, 153, 0.3);
-  border-radius: 5px;
+  border-radius: 6px;
   background: rgba(52, 211, 153, 0.1);
   color: #34d399;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -69,12 +69,12 @@
 }
 
 .removeScheduleBtn {
-  padding: 4px 12px;
+  padding: 5px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 5px;
+  border-radius: 6px;
   background: transparent;
   color: rgba(255, 255, 255, 0.35);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -87,12 +87,12 @@
 }
 
 .timeBtn {
-  padding: 4px 12px;
+  padding: 5px 14px;
   border: 1px solid rgba(96, 165, 250, 0.2);
-  border-radius: 5px;
+  border-radius: 6px;
   background: rgba(96, 165, 250, 0.08);
   color: rgba(96, 165, 250, 0.75);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -160,13 +160,13 @@
 }
 
 .check {
-  width: 17px;
-  height: 17px;
+  width: 19px;
+  height: 19px;
   border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -184,7 +184,7 @@
 
 .content {
   flex: 1;
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.7);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -198,7 +198,7 @@
 }
 
 .dateTag {
-  font-size: 10px;
+  font-size: 11px;
   color: #60a5fa;
   margin-right: 5px;
   font-weight: 600;
@@ -206,13 +206,13 @@
 }
 
 .del {
-  width: 17px;
-  height: 17px;
+  width: 19px;
+  height: 19px;
   border: none;
   border-radius: 4px;
   background: transparent;
   color: rgba(255, 255, 255, 0.2);
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -254,7 +254,7 @@
 }
 
 .classTime {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #fbbf24;
   background: rgba(251, 191, 36, 0.15);
@@ -266,7 +266,7 @@
 }
 
 .className {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   overflow: hidden;
@@ -283,7 +283,7 @@
 }
 
 .classRoom {
-  font-size: 10px;
+  font-size: 11px;
   color: rgba(96, 165, 250, 0.75);
   font-weight: 500;
 }
@@ -294,7 +294,7 @@
 }
 
 .classTag {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   color: rgba(251, 191, 36, 0.75);
   background: rgba(251, 191, 36, 0.12);

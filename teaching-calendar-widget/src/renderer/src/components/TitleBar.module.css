@@ -20,13 +20,13 @@
 }
 
 .backBtn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: none;
-  border-radius: 7px;
+  border-radius: 8px;
   background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -54,17 +54,17 @@
 }
 
 .semester {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
 }
 
 .weekBadge {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: #60a5fa;
   background: rgba(96, 165, 250, 0.18);
@@ -77,7 +77,7 @@
 }
 
 .uploadBtn {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.55);
   background: rgba(255, 255, 255, 0.06);
@@ -103,17 +103,17 @@
 }
 
 .btn {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 16px;
   transition: all 0.2s ease;
 }
 

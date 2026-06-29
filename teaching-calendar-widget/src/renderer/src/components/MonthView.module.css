@@ -16,13 +16,13 @@
 }
 
 .navBtn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: none;
-  border-radius: 7px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.55);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 300;
   cursor: pointer;
   display: flex;
@@ -58,7 +58,7 @@
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   padding: 3px 6px;
@@ -86,24 +86,24 @@
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
-  margin-bottom: 6px;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .weekday {
   text-align: center;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: rgba(255, 255, 255, 0.7);
-  padding: 4px 0;
-  letter-spacing: 0.3px;
+  padding: 6px 0;
+  letter-spacing: 0.5px;
 }
 
 /* Day grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
+  gap: 4px;
   flex: 1;
 }
 
@@ -112,10 +112,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4px 2px;
+  padding: 6px 2px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.03);
-  min-height: 38px;
+  min-height: 44px;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -177,11 +177,11 @@
   position: absolute;
   bottom: 2px;
   right: 2px;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 700;
-  color: rgba(251, 191, 36, 0.8);
-  background: rgba(251, 191, 36, 0.15);
-  padding: 0px 3px;
+  color: rgba(251, 191, 36, 0.85);
+  background: rgba(251, 191, 36, 0.18);
+  padding: 1px 4px;
   border-radius: 2px;
   line-height: 1.3;
   letter-spacing: 0.3px;
@@ -210,7 +210,7 @@
 }
 
 .dayNum {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.75);
   line-height: 1.2;
@@ -243,8 +243,8 @@
   background: none;
   border: none;
   color: #34d399;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   padding: 5px 10px;
   border-radius: 6px;
@@ -272,7 +272,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.6);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   padding: 5px 12px;
