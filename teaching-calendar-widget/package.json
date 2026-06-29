@@ -48,7 +48,8 @@
     "win": {
       "target": [
         "portable"
-      ]
+      ],
+      "sign": false
     },
     "portable": {
       "artifactName": "教学日历挂件-portable.exe"

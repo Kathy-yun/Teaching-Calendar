@@ -107,6 +107,23 @@
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
 }
 
+.inputError {
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+.inputError:focus {
+  border-color: rgba(239, 68, 68, 0.8) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.errorHint {
+  font-size: 11px;
+  color: rgba(239, 68, 68, 0.9);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 .input::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
   cursor: pointer;
@@ -162,6 +179,13 @@
   background: linear-gradient(135deg, #60a5fa, #3b82f6);
   box-shadow: 0 6px 18px rgba(59, 130, 246, 0.5);
   transform: translateY(-2px);
+}
+
+.confirmBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .confirmBtn:active {

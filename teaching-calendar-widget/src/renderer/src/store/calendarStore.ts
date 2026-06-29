@@ -82,8 +82,14 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
 
   // 手动设置教学周历：从起始日顺延，生成每周一~周日的区间
   setManualCalendar: (semester, startDate, totalWeeks) => {
-    const teachingWeeks: TeachingWeekRange[] = []
     const start = new Date(startDate + 'T00:00:00')
+
+    // 兜底校验：起始日必须是周一（1=周一）
+    if (getDayOfWeek(startDate) !== 1) {
+      return
+    }
+
+    const teachingWeeks: TeachingWeekRange[] = []
 
     for (let w = 0; w < totalWeeks; w++) {
       const weekStart = new Date(start)
