@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { TeachingCalendar, TodoItem, TimeSlot, ClassEntry } from '@shared/types'
+import type { TeachingCalendar, TeachingWeekRange, TodoItem, TimeSlot, ClassEntry } from '@shared/types'
 import { getDayOfWeek, getDefaultTimeSlots } from '../parsers/scheduleParser'
 
 interface CalendarState {
@@ -18,6 +18,9 @@ interface CalendarState {
   deleteTodo: (id: string) => void
   getTodosForDate: (date: string) => TodoItem[]
   clearAll: () => void
+
+  // 手动设置教学周历
+  setManualCalendar: (semester: string, startDate: string, totalWeeks: number) => void
 
   // 时间映射表
   setTimeSlots: (slots: TimeSlot[]) => void
@@ -67,6 +70,34 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       todos: [],
       classEntries: []
     }),
+
+  // 手动设置教学周历：从起始日顺延，生成每周一~周日的区间
+  setManualCalendar: (semester, startDate, totalWeeks) => {
+    const teachingWeeks: TeachingWeekRange[] = []
+    const start = new Date(startDate + 'T00:00:00')
+
+    for (let w = 0; w < totalWeeks; w++) {
+      const weekStart = new Date(start)
+      weekStart.setDate(start.getDate() + w * 7)
+
+      const weekEnd = new Date(weekStart)
+      weekEnd.setDate(weekStart.getDate() + 6)
+
+      teachingWeeks.push({
+        weekNumber: w + 1,
+        startDate: formatDate(weekStart),
+        endDate: formatDate(weekEnd)
+      })
+    }
+
+    const calendar: TeachingCalendar = {
+      id: crypto.randomUUID(),
+      semester,
+      teachingWeeks
+    }
+
+    set({ currentCalendar: calendar })
+  },
 
   // 设置上课时间映射表
   setTimeSlots: (slots) =>
@@ -169,3 +200,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       classEntries: []
     }))
 }))
+
+function formatDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}

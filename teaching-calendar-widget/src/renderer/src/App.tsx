@@ -11,6 +11,8 @@ import styles from './App.module.css'
 function App() {
   const calendar = useCalendarStore((s) => s.currentCalendar)
   const setCalendar = useCalendarStore((s) => s.setCalendar)
+  const setManualCalendar = useCalendarStore((s) => s.setManualCalendar)
+  const clearAll = useCalendarStore((s) => s.clearAll)
   const todos = useCalendarStore((s) => s.todos)
   const addTodo = useCalendarStore((s) => s.addTodo)
   const toggleTodo = useCalendarStore((s) => s.toggleTodo)
@@ -52,6 +54,17 @@ function App() {
       alert('上传失败')
     }
   }, [handleFileUpload])
+
+  const handleManualSetCalendar = useCallback((semester: string, startDate: string, totalWeeks: number) => {
+    setManualCalendar(semester, startDate, totalWeeks)
+    const today = new Date()
+    setCurrentDate(today)
+    setSelectedDate(format(today, 'yyyy-MM-dd'))
+  }, [setManualCalendar])
+
+  const handleRemoveCalendar = useCallback(() => {
+    clearAll()
+  }, [clearAll])
 
   // 上传上课课表
   const handleScheduleUpload = useCallback(async () => {
@@ -162,6 +175,9 @@ function App() {
         onDateDoubleClick={handleDateDoubleClick}
         onBackToToday={handleBackToToday}
         onChangeCalendar={handleChangeCalendar}
+        onManualSetCalendar={handleManualSetCalendar}
+        onRemoveCalendar={handleRemoveCalendar}
+        hasCalendar={!!calendar}
         classEntries={classEntries}
         timeSlots={timeSlots}
       />

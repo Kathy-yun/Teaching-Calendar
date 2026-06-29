@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef, useState, useCallback } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isToday, getDay, addDays } from 'date-fns'
 import clsx from 'clsx'
 import type { TeachingCalendar, CalendarDay, ClassEntry, TimeSlot } from '@shared/types'
 import { getDayOfWeek } from '../parsers/scheduleParser'
+import { DropdownMenu } from './DropdownMenu'
+import { TeachingWeekModal } from './TeachingWeekModal'
 import styles from './MonthView.module.css'
 
 interface MonthViewProps {
@@ -13,7 +15,10 @@ interface MonthViewProps {
   onDateSelect: (date: string) => void
   onDateDoubleClick: (date: string) => void
   onBackToToday: () => void
-  onChangeCalendar?: () => void
+  onChangeCalendar: () => void
+  onManualSetCalendar: (semester: string, startDate: string, totalWeeks: number) => void
+  onRemoveCalendar: () => void
+  hasCalendar: boolean
   classEntries?: ClassEntry[]
   timeSlots?: TimeSlot[]
 }
@@ -21,6 +26,7 @@ interface MonthViewProps {
 export function MonthView({
   calendar, currentDate, selectedDate, onDateChange,
   onDateSelect, onDateDoubleClick, onBackToToday, onChangeCalendar,
+  onManualSetCalendar, onRemoveCalendar, hasCalendar,
   classEntries = [], timeSlots = []
 }: MonthViewProps) {
   const days = useMemo(() => buildMonthDays(currentDate, calendar || { id: '', semester: '', teachingWeeks: [] }, classEntries, timeSlots), [currentDate, calendar, classEntries, timeSlots])
@@ -48,9 +54,38 @@ export function MonthView({
   const yearOptions = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i)
   const monthOptions = Array.from({ length: 12 }, (_, i) => i)
 
+  // Dropdown menu state
+  const [showMenu, setShowMenu] = useState(false)
+  const [showTeachingWeekModal, setShowTeachingWeekModal] = useState(false)
+  const menuBtnRef = useRef<HTMLButtonElement>(null)
+
+  const handleMenuBtnClick = () => {
+    setShowMenu(prev => !prev)
+  }
+
+  const handleUploadClick = () => {
+    onChangeCalendar()
+    setShowMenu(false)
+  }
+
+  const handleManualClick = () => {
+    setShowTeachingWeekModal(true)
+    setShowMenu(false)
+  }
+
+  const handleRemoveClick = () => {
+    onRemoveCalendar()
+    setShowMenu(false)
+  }
+
+  const handleManualSave = (semester: string, startDate: string, totalWeeks: number) => {
+    onManualSetCalendar(semester, startDate, totalWeeks)
+    setShowTeachingWeekModal(false)
+  }
+
   return (
     <div className={styles.container}>
-      {/* Month navigation with dropdown */}
+      {/* Month navigation with dropdowns */}
       <div className={styles.nav}>
         <button className={styles.navBtn} onClick={goPrev}>‹</button>
 
@@ -90,17 +125,36 @@ export function MonthView({
         ))}
       </div>
 
-      {/* Footer with "回到今天" and "上传/更换教学周历" buttons */}
+      {/* Footer with "回到今天" and calendar button */}
       <div className={styles.footer}>
         <button className={styles.todayBtn} onClick={onBackToToday}>
           回到今天
         </button>
-        {onChangeCalendar && (
-          <button className={styles.changeBtn} onClick={onChangeCalendar}>
-            {calendar ? '更换教学周历' : '上传教学周历'}
+        <div className={styles.rightArea}>
+          <button ref={menuBtnRef} className={styles.changeBtn} onClick={handleMenuBtnClick}>
+            {hasCalendar ? '教学周历 ▾' : '上传教学周历 ▾'}
           </button>
-        )}
+          {showMenu && (
+            <DropdownMenu
+              triggerRef={menuBtnRef}
+              onClose={() => setShowMenu(false)}
+              items={[
+                { label: '上传教学周历', onClick: handleUploadClick },
+                { label: '手动设置教学周', onClick: handleManualClick },
+                ...(hasCalendar ? [{ label: '移除教学周历', onClick: handleRemoveClick, danger: true }] : []),
+              ]}
+            />
+          )}
+        </div>
       </div>
+
+      {showTeachingWeekModal && (
+        <TeachingWeekModal
+          onSave={handleManualSave}
+          onClose={() => setShowTeachingWeekModal(false)}
+          defaultSemester={calendar?.semester}
+        />
+      )}
     </div>
   )
 }

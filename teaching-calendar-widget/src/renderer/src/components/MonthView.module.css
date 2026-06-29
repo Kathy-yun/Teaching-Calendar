@@ -187,7 +187,7 @@
   margin-top: 1px;
 }
 
-/* Footer with "回到今天" and "更换教学周历" buttons */
+/* Footer with "回到今天" and calendar button */
 .footer {
   display: flex;
   justify-content: space-between;
@@ -213,6 +213,12 @@
   color: #6ee7b7;
 }
 
+.rightArea {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .changeBtn {
   background: none;
   border: none;
@@ -222,6 +228,7 @@
   padding: 4px 0;
   border-radius: 4px;
   transition: all 0.15s;
+  user-select: none;
 }
 
 .changeBtn:hover {
