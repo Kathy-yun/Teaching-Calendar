@@ -31,7 +31,15 @@ export function MonthView({
 }: MonthViewProps) {
   const days = useMemo(() => buildMonthDays(currentDate, calendar || { id: '', semester: '', teachingWeeks: [] }, classEntries, timeSlots), [currentDate, calendar, classEntries, timeSlots])
 
-  const weekdays = ['一', '二', '三', '四', '五', '六', '日']
+  const weekdays = [
+    { label: '一', isWeekend: false },
+    { label: '二', isWeekend: false },
+    { label: '三', isWeekend: false },
+    { label: '四', isWeekend: false },
+    { label: '五', isWeekend: false },
+    { label: '六', isWeekend: true },
+    { label: '日', isWeekend: true },
+  ]
 
   const goPrev = () => onDateChange(subMonths(currentDate, 1))
   const goNext = () => onDateChange(addMonths(currentDate, 1))
@@ -107,8 +115,10 @@ export function MonthView({
 
       {/* Weekday headers */}
       <div className={styles.weekdays}>
-        {weekdays.map(d => (
-          <div key={d} className={styles.weekday}>{d}</div>
+        {weekdays.map(({ label, isWeekend }) => (
+          <div key={label} className={clsx(styles.weekday, isWeekend && styles.weekend)}>
+            {label}
+          </div>
         ))}
       </div>
 
