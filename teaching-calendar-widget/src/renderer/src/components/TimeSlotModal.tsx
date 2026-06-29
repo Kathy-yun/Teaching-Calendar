@@ -96,7 +96,6 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
     }))
     onSave(cleaned)
     setSaved(true)
-    setTimeout(onClose, 600)
   }
 
   const handleAdd = () => {
@@ -113,8 +112,8 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+    <div className={styles.overlay}>
+      <div className={styles.modal}>
         <div className={styles.header}>
           <h3 className={styles.title}>上课时间设置</h3>
           <button className={styles.closeBtn} onClick={onClose} title="关闭">✕</button>
@@ -166,9 +165,9 @@ export function TimeSlotModal({ timeSlots, onSave, onClose }: TimeSlotModalProps
             <button
               className={clsx(styles.confirmBtn, saved && styles.savedBtn)}
               onClick={handleSave}
-              disabled={hasErrors || saved}
+              disabled={hasErrors}
             >
-              {saved ? '已保存 ✓' : '保存'}
+              保存
             </button>
           </div>
         </div>

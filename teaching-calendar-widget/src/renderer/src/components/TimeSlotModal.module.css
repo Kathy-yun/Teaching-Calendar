@@ -272,7 +272,29 @@
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
 }
 
-.savedBtn:hover {
+.confirmBtn.savedBtn:hover {
   background: linear-gradient(135deg, #34d399, #10b981);
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+  transform: translateY(-2px);
+}
+
+.savedDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+  margin-left: 6px;
+  animation: savedPulse 2s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+@keyframes savedPulse {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(52, 211, 153, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+  }
 }

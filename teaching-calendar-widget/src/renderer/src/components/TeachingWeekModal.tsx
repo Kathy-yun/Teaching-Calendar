@@ -33,8 +33,8 @@ export function TeachingWeekModal({ onSave, onClose, defaultSemester }: Teaching
   }, [semester, startDate, totalWeeks, onSave])
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+    <div className={styles.overlay}>
+      <div className={styles.modal}>
         <div className={styles.header}>
           <h3 className={styles.title}>手动设置教学周历</h3>
           <button className={styles.closeBtn} onClick={onClose} title="关闭">✕</button>

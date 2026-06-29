@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import type { TeachingCalendar, TeachingWeekRange, TodoItem, TimeSlot, ClassEntry } from '@shared/types'
 import { getDayOfWeek, getDefaultTimeSlots } from '../parsers/scheduleParser'
 
+const MAX_TODOS = 500 // 待办软上限，超出时清理最早的已完成项
+
 interface CalendarState {
   currentCalendar: TeachingCalendar | null
   isLoading: boolean
@@ -51,9 +53,10 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     set({ isLoading: loading }),
 
   addTodo: (todo) =>
-    set((state) => ({
-      todos: [...state.todos, todo]
-    })),
+    set((state) => {
+      const trimmed = enforceTodoLimit([...state.todos, todo])
+      return { todos: trimmed }
+    }),
 
   toggleTodo: (id) =>
     set((state) => ({
@@ -201,7 +204,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       }
     }
 
-    set({ todos: [...manualTodos, ...newTodos] })
+    set({ todos: enforceTodoLimit([...manualTodos, ...newTodos]) })
   },
 
   // 移除所有自动生成的课表待办
@@ -211,6 +214,35 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       classEntries: []
     }))
 }))
+
+function enforceTodoLimit(todos: TodoItem[]): TodoItem[] {
+  if (todos.length <= MAX_TODOS) return todos
+
+  // 分离待办和已完成
+  const remaining: TodoItem[] = []
+  const completed: TodoItem[] = []
+  for (const t of todos) {
+    if (t.completed) completed.push(t)
+    else remaining.push(t)
+  }
+
+  const overflow = remaining.length + completed.length - MAX_TODOS
+
+  if (overflow <= completed.length) {
+    // 只需要移除部分已完成项即可
+    completed.sort((a, b) =>
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
+    const keepCompleted = completed.slice(overflow)
+    return [...remaining, ...keepCompleted]
+  }
+
+  // 已完成不够删，全部保留最新的 MAX_TODOS 条
+  const all = [...remaining, ...completed].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
+  return all.slice(0, MAX_TODOS)
+}
 
 function formatDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
