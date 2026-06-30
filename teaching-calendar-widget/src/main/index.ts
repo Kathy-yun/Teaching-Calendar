@@ -45,7 +45,7 @@ function createWindow(): void {
     y: 40,
     frame: false,
     transparent: true,
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     resizable: true,
     skipTaskbar: false,
     webPreferences: {
